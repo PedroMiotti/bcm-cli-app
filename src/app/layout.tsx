@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Bolão Copa 2026",
-  description: "Sistema de palpites para a Copa do Mundo 2026",
+  title: "Bolão Trupe Thaki Tchaki 2026",
+  description: "O hexa vem 🇧🇷🇧🇷 - Bolão Trupe Thaki Tchaki 2026",
+  icons: {
+    icon: "/public/logo-trupe.png",
+  },
 }
 
 export default function RootLayout({
