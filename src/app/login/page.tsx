@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/auth"
+import { useAuthHydrated, useAuthStore } from "@/store/auth"
 import { Eye, EyeOff, ArrowRight, Loader2, ChevronLeft } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import UserAvatar from "@/components/UserAvatar"
@@ -20,8 +20,16 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const user = useAuthStore((s) => s.user)
   const setUser = useAuthStore((s) => s.setUser)
+  const hydrated = useAuthHydrated()
   const router = useRouter()
+
+  useEffect(() => {
+    if (hydrated && user) {
+      router.replace("/jogos")
+    }
+  }, [hydrated, user, router])
 
   async function handleUsernameSubmit(e: React.FormEvent) {
     e.preventDefault()
