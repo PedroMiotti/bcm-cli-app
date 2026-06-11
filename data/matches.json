@@ -1,0 +1,1586 @@
+[
+  {
+    "id": "m1",
+    "group": "A",
+    "matchNumber": 1,
+    "homeTeam": {
+      "name": "México",
+      "code": "MEX",
+      "flag": "🇲🇽"
+    },
+    "awayTeam": {
+      "name": "África do Sul",
+      "code": "RSA",
+      "flag": "🇿🇦"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-11T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m2",
+    "group": "A",
+    "matchNumber": 2,
+    "homeTeam": {
+      "name": "Coreia do Sul",
+      "code": "KOR",
+      "flag": "🇰🇷"
+    },
+    "awayTeam": {
+      "name": "República Tcheca",
+      "code": "CZE",
+      "flag": "🇨🇿"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-12T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m3",
+    "group": "A",
+    "matchNumber": 3,
+    "homeTeam": {
+      "name": "República Tcheca",
+      "code": "CZE",
+      "flag": "🇨🇿"
+    },
+    "awayTeam": {
+      "name": "África do Sul",
+      "code": "RSA",
+      "flag": "🇿🇦"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-18T16:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m4",
+    "group": "A",
+    "matchNumber": 4,
+    "homeTeam": {
+      "name": "México",
+      "code": "MEX",
+      "flag": "🇲🇽"
+    },
+    "awayTeam": {
+      "name": "Coreia do Sul",
+      "code": "KOR",
+      "flag": "🇰🇷"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-19T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m5",
+    "group": "A",
+    "matchNumber": 5,
+    "homeTeam": {
+      "name": "República Tcheca",
+      "code": "CZE",
+      "flag": "🇨🇿"
+    },
+    "awayTeam": {
+      "name": "México",
+      "code": "MEX",
+      "flag": "🇲🇽"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-25T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m6",
+    "group": "A",
+    "matchNumber": 6,
+    "homeTeam": {
+      "name": "África do Sul",
+      "code": "RSA",
+      "flag": "🇿🇦"
+    },
+    "awayTeam": {
+      "name": "Coreia do Sul",
+      "code": "KOR",
+      "flag": "🇰🇷"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-25T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m7",
+    "group": "B",
+    "matchNumber": 7,
+    "homeTeam": {
+      "name": "Canadá",
+      "code": "CAN",
+      "flag": "🇨🇦"
+    },
+    "awayTeam": {
+      "name": "Bósnia e Herzegovina",
+      "code": "BIH",
+      "flag": "🇧🇦"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-12T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m8",
+    "group": "B",
+    "matchNumber": 8,
+    "homeTeam": {
+      "name": "Qatar",
+      "code": "QAT",
+      "flag": "🇶🇦"
+    },
+    "awayTeam": {
+      "name": "Suíça",
+      "code": "SUI",
+      "flag": "🇨🇭"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-13T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m9",
+    "group": "B",
+    "matchNumber": 9,
+    "homeTeam": {
+      "name": "Suíça",
+      "code": "SUI",
+      "flag": "🇨🇭"
+    },
+    "awayTeam": {
+      "name": "Bósnia e Herzegovina",
+      "code": "BIH",
+      "flag": "🇧🇦"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-18T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m10",
+    "group": "B",
+    "matchNumber": 10,
+    "homeTeam": {
+      "name": "Canadá",
+      "code": "CAN",
+      "flag": "🇨🇦"
+    },
+    "awayTeam": {
+      "name": "Qatar",
+      "code": "QAT",
+      "flag": "🇶🇦"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-18T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m11",
+    "group": "B",
+    "matchNumber": 11,
+    "homeTeam": {
+      "name": "Suíça",
+      "code": "SUI",
+      "flag": "🇨🇭"
+    },
+    "awayTeam": {
+      "name": "Canadá",
+      "code": "CAN",
+      "flag": "🇨🇦"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-24T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m12",
+    "group": "B",
+    "matchNumber": 12,
+    "homeTeam": {
+      "name": "Bósnia e Herzegovina",
+      "code": "BIH",
+      "flag": "🇧🇦"
+    },
+    "awayTeam": {
+      "name": "Qatar",
+      "code": "QAT",
+      "flag": "🇶🇦"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-24T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m13",
+    "group": "C",
+    "matchNumber": 13,
+    "homeTeam": {
+      "name": "Brasil",
+      "code": "BRA",
+      "flag": "🇧🇷"
+    },
+    "awayTeam": {
+      "name": "Marrocos",
+      "code": "MAR",
+      "flag": "🇲🇦"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-13T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m14",
+    "group": "C",
+    "matchNumber": 14,
+    "homeTeam": {
+      "name": "Haiti",
+      "code": "HAI",
+      "flag": "🇭🇹"
+    },
+    "awayTeam": {
+      "name": "Escócia",
+      "code": "SCO",
+      "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-14T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m15",
+    "group": "C",
+    "matchNumber": 15,
+    "homeTeam": {
+      "name": "Escócia",
+      "code": "SCO",
+      "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿"
+    },
+    "awayTeam": {
+      "name": "Marrocos",
+      "code": "MAR",
+      "flag": "🇲🇦"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-19T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m16",
+    "group": "C",
+    "matchNumber": 16,
+    "homeTeam": {
+      "name": "Brasil",
+      "code": "BRA",
+      "flag": "🇧🇷"
+    },
+    "awayTeam": {
+      "name": "Haiti",
+      "code": "HAI",
+      "flag": "🇭🇹"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-20T00:30:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m17",
+    "group": "C",
+    "matchNumber": 17,
+    "homeTeam": {
+      "name": "Escócia",
+      "code": "SCO",
+      "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿"
+    },
+    "awayTeam": {
+      "name": "Brasil",
+      "code": "BRA",
+      "flag": "🇧🇷"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-24T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m18",
+    "group": "C",
+    "matchNumber": 18,
+    "homeTeam": {
+      "name": "Marrocos",
+      "code": "MAR",
+      "flag": "🇲🇦"
+    },
+    "awayTeam": {
+      "name": "Haiti",
+      "code": "HAI",
+      "flag": "🇭🇹"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-24T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m19",
+    "group": "D",
+    "matchNumber": 19,
+    "homeTeam": {
+      "name": "EUA",
+      "code": "USA",
+      "flag": "🇺🇸"
+    },
+    "awayTeam": {
+      "name": "Paraguai",
+      "code": "PAR",
+      "flag": "🇵🇾"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-13T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m20",
+    "group": "D",
+    "matchNumber": 20,
+    "homeTeam": {
+      "name": "Austrália",
+      "code": "AUS",
+      "flag": "🇦🇺"
+    },
+    "awayTeam": {
+      "name": "Turquia",
+      "code": "TUR",
+      "flag": "🇹🇷"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-14T04:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m21",
+    "group": "D",
+    "matchNumber": 21,
+    "homeTeam": {
+      "name": "EUA",
+      "code": "USA",
+      "flag": "🇺🇸"
+    },
+    "awayTeam": {
+      "name": "Austrália",
+      "code": "AUS",
+      "flag": "🇦🇺"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-19T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m22",
+    "group": "D",
+    "matchNumber": 22,
+    "homeTeam": {
+      "name": "Turquia",
+      "code": "TUR",
+      "flag": "🇹🇷"
+    },
+    "awayTeam": {
+      "name": "Paraguai",
+      "code": "PAR",
+      "flag": "🇵🇾"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-20T03:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m23",
+    "group": "D",
+    "matchNumber": 23,
+    "homeTeam": {
+      "name": "Turquia",
+      "code": "TUR",
+      "flag": "🇹🇷"
+    },
+    "awayTeam": {
+      "name": "EUA",
+      "code": "USA",
+      "flag": "🇺🇸"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-26T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m24",
+    "group": "D",
+    "matchNumber": 24,
+    "homeTeam": {
+      "name": "Paraguai",
+      "code": "PAR",
+      "flag": "🇵🇾"
+    },
+    "awayTeam": {
+      "name": "Austrália",
+      "code": "AUS",
+      "flag": "🇦🇺"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-26T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m25",
+    "group": "E",
+    "matchNumber": 25,
+    "homeTeam": {
+      "name": "Alemanha",
+      "code": "GER",
+      "flag": "🇩🇪"
+    },
+    "awayTeam": {
+      "name": "Curaçao",
+      "code": "CUW",
+      "flag": "🇨🇼"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-14T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m26",
+    "group": "E",
+    "matchNumber": 26,
+    "homeTeam": {
+      "name": "Costa do Marfim",
+      "code": "CIV",
+      "flag": "🇨🇮"
+    },
+    "awayTeam": {
+      "name": "Equador",
+      "code": "ECU",
+      "flag": "🇪🇨"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-14T23:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m27",
+    "group": "E",
+    "matchNumber": 27,
+    "homeTeam": {
+      "name": "Equador",
+      "code": "ECU",
+      "flag": "🇪🇨"
+    },
+    "awayTeam": {
+      "name": "Curaçao",
+      "code": "CUW",
+      "flag": "🇨🇼"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-20T00:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m28",
+    "group": "E",
+    "matchNumber": 28,
+    "homeTeam": {
+      "name": "Alemanha",
+      "code": "GER",
+      "flag": "🇩🇪"
+    },
+    "awayTeam": {
+      "name": "Costa do Marfim",
+      "code": "CIV",
+      "flag": "🇨🇮"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-20T20:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m29",
+    "group": "E",
+    "matchNumber": 29,
+    "homeTeam": {
+      "name": "Equador",
+      "code": "ECU",
+      "flag": "🇪🇨"
+    },
+    "awayTeam": {
+      "name": "Alemanha",
+      "code": "GER",
+      "flag": "🇩🇪"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-25T20:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m30",
+    "group": "E",
+    "matchNumber": 30,
+    "homeTeam": {
+      "name": "Curaçao",
+      "code": "CUW",
+      "flag": "🇨🇼"
+    },
+    "awayTeam": {
+      "name": "Costa do Marfim",
+      "code": "CIV",
+      "flag": "🇨🇮"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-25T20:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m31",
+    "group": "F",
+    "matchNumber": 31,
+    "homeTeam": {
+      "name": "Países Baixos",
+      "code": "NED",
+      "flag": "🇳🇱"
+    },
+    "awayTeam": {
+      "name": "Japão",
+      "code": "JPN",
+      "flag": "🇯🇵"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-14T20:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m32",
+    "group": "F",
+    "matchNumber": 32,
+    "homeTeam": {
+      "name": "Suécia",
+      "code": "SWE",
+      "flag": "🇸🇪"
+    },
+    "awayTeam": {
+      "name": "Tunísia",
+      "code": "TUN",
+      "flag": "🇹🇳"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-15T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m33",
+    "group": "F",
+    "matchNumber": 33,
+    "homeTeam": {
+      "name": "Países Baixos",
+      "code": "NED",
+      "flag": "🇳🇱"
+    },
+    "awayTeam": {
+      "name": "Suécia",
+      "code": "SWE",
+      "flag": "🇸🇪"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-20T17:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m34",
+    "group": "F",
+    "matchNumber": 34,
+    "homeTeam": {
+      "name": "Tunísia",
+      "code": "TUN",
+      "flag": "🇹🇳"
+    },
+    "awayTeam": {
+      "name": "Japão",
+      "code": "JPN",
+      "flag": "🇯🇵"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-21T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m35",
+    "group": "F",
+    "matchNumber": 35,
+    "homeTeam": {
+      "name": "Tunísia",
+      "code": "TUN",
+      "flag": "🇹🇳"
+    },
+    "awayTeam": {
+      "name": "Países Baixos",
+      "code": "NED",
+      "flag": "🇳🇱"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-25T23:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m36",
+    "group": "F",
+    "matchNumber": 36,
+    "homeTeam": {
+      "name": "Japão",
+      "code": "JPN",
+      "flag": "🇯🇵"
+    },
+    "awayTeam": {
+      "name": "Suécia",
+      "code": "SWE",
+      "flag": "🇸🇪"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-25T23:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m37",
+    "group": "G",
+    "matchNumber": 37,
+    "homeTeam": {
+      "name": "Bélgica",
+      "code": "BEL",
+      "flag": "🇧🇪"
+    },
+    "awayTeam": {
+      "name": "Egito",
+      "code": "EGY",
+      "flag": "🇪🇬"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-15T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m38",
+    "group": "G",
+    "matchNumber": 38,
+    "homeTeam": {
+      "name": "Irã",
+      "code": "IRN",
+      "flag": "🇮🇷"
+    },
+    "awayTeam": {
+      "name": "Nova Zelândia",
+      "code": "NZL",
+      "flag": "🇳🇿"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-16T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m39",
+    "group": "G",
+    "matchNumber": 39,
+    "homeTeam": {
+      "name": "Bélgica",
+      "code": "BEL",
+      "flag": "🇧🇪"
+    },
+    "awayTeam": {
+      "name": "Irã",
+      "code": "IRN",
+      "flag": "🇮🇷"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-21T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m40",
+    "group": "G",
+    "matchNumber": 40,
+    "homeTeam": {
+      "name": "Nova Zelândia",
+      "code": "NZL",
+      "flag": "🇳🇿"
+    },
+    "awayTeam": {
+      "name": "Egito",
+      "code": "EGY",
+      "flag": "🇪🇬"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-22T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m41",
+    "group": "G",
+    "matchNumber": 41,
+    "homeTeam": {
+      "name": "Nova Zelândia",
+      "code": "NZL",
+      "flag": "🇳🇿"
+    },
+    "awayTeam": {
+      "name": "Bélgica",
+      "code": "BEL",
+      "flag": "🇧🇪"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-27T03:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m42",
+    "group": "G",
+    "matchNumber": 42,
+    "homeTeam": {
+      "name": "Egito",
+      "code": "EGY",
+      "flag": "🇪🇬"
+    },
+    "awayTeam": {
+      "name": "Irã",
+      "code": "IRN",
+      "flag": "🇮🇷"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-27T03:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m43",
+    "group": "H",
+    "matchNumber": 43,
+    "homeTeam": {
+      "name": "Espanha",
+      "code": "ESP",
+      "flag": "🇪🇸"
+    },
+    "awayTeam": {
+      "name": "Cabo Verde",
+      "code": "CPV",
+      "flag": "🇨🇻"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-15T16:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m44",
+    "group": "H",
+    "matchNumber": 44,
+    "homeTeam": {
+      "name": "Arábia Saudita",
+      "code": "KSA",
+      "flag": "🇸🇦"
+    },
+    "awayTeam": {
+      "name": "Uruguai",
+      "code": "URY",
+      "flag": "🇺🇾"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-15T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m45",
+    "group": "H",
+    "matchNumber": 45,
+    "homeTeam": {
+      "name": "Espanha",
+      "code": "ESP",
+      "flag": "🇪🇸"
+    },
+    "awayTeam": {
+      "name": "Arábia Saudita",
+      "code": "KSA",
+      "flag": "🇸🇦"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-21T16:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m46",
+    "group": "H",
+    "matchNumber": 46,
+    "homeTeam": {
+      "name": "Uruguai",
+      "code": "URY",
+      "flag": "🇺🇾"
+    },
+    "awayTeam": {
+      "name": "Cabo Verde",
+      "code": "CPV",
+      "flag": "🇨🇻"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-21T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m47",
+    "group": "H",
+    "matchNumber": 47,
+    "homeTeam": {
+      "name": "Uruguai",
+      "code": "URY",
+      "flag": "🇺🇾"
+    },
+    "awayTeam": {
+      "name": "Espanha",
+      "code": "ESP",
+      "flag": "🇪🇸"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-27T00:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m48",
+    "group": "H",
+    "matchNumber": 48,
+    "homeTeam": {
+      "name": "Cabo Verde",
+      "code": "CPV",
+      "flag": "🇨🇻"
+    },
+    "awayTeam": {
+      "name": "Arábia Saudita",
+      "code": "KSA",
+      "flag": "🇸🇦"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-27T00:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m49",
+    "group": "I",
+    "matchNumber": 49,
+    "homeTeam": {
+      "name": "França",
+      "code": "FRA",
+      "flag": "🇫🇷"
+    },
+    "awayTeam": {
+      "name": "Senegal",
+      "code": "SEN",
+      "flag": "🇸🇳"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-16T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m50",
+    "group": "I",
+    "matchNumber": 50,
+    "homeTeam": {
+      "name": "Iraque",
+      "code": "IRQ",
+      "flag": "🇮🇶"
+    },
+    "awayTeam": {
+      "name": "Noruega",
+      "code": "NOR",
+      "flag": "🇳🇴"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-16T22:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m51",
+    "group": "I",
+    "matchNumber": 51,
+    "homeTeam": {
+      "name": "França",
+      "code": "FRA",
+      "flag": "🇫🇷"
+    },
+    "awayTeam": {
+      "name": "Iraque",
+      "code": "IRQ",
+      "flag": "🇮🇶"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-22T21:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m52",
+    "group": "I",
+    "matchNumber": 52,
+    "homeTeam": {
+      "name": "Noruega",
+      "code": "NOR",
+      "flag": "🇳🇴"
+    },
+    "awayTeam": {
+      "name": "Senegal",
+      "code": "SEN",
+      "flag": "🇸🇳"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-23T00:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m53",
+    "group": "I",
+    "matchNumber": 53,
+    "homeTeam": {
+      "name": "Noruega",
+      "code": "NOR",
+      "flag": "🇳🇴"
+    },
+    "awayTeam": {
+      "name": "França",
+      "code": "FRA",
+      "flag": "🇫🇷"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-26T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m54",
+    "group": "I",
+    "matchNumber": 54,
+    "homeTeam": {
+      "name": "Senegal",
+      "code": "SEN",
+      "flag": "🇸🇳"
+    },
+    "awayTeam": {
+      "name": "Iraque",
+      "code": "IRQ",
+      "flag": "🇮🇶"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-26T19:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m55",
+    "group": "J",
+    "matchNumber": 55,
+    "homeTeam": {
+      "name": "Argentina",
+      "code": "ARG",
+      "flag": "🇦🇷"
+    },
+    "awayTeam": {
+      "name": "Argélia",
+      "code": "ALG",
+      "flag": "🇩🇿"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-17T01:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m56",
+    "group": "J",
+    "matchNumber": 56,
+    "homeTeam": {
+      "name": "Áustria",
+      "code": "AUT",
+      "flag": "🇦🇹"
+    },
+    "awayTeam": {
+      "name": "Jordânia",
+      "code": "JOR",
+      "flag": "🇯🇴"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-17T04:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m57",
+    "group": "J",
+    "matchNumber": 57,
+    "homeTeam": {
+      "name": "Argentina",
+      "code": "ARG",
+      "flag": "🇦🇷"
+    },
+    "awayTeam": {
+      "name": "Áustria",
+      "code": "AUT",
+      "flag": "🇦🇹"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-22T17:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m58",
+    "group": "J",
+    "matchNumber": 58,
+    "homeTeam": {
+      "name": "Jordânia",
+      "code": "JOR",
+      "flag": "🇯🇴"
+    },
+    "awayTeam": {
+      "name": "Argélia",
+      "code": "ALG",
+      "flag": "🇩🇿"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-23T03:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m59",
+    "group": "J",
+    "matchNumber": 59,
+    "homeTeam": {
+      "name": "Jordânia",
+      "code": "JOR",
+      "flag": "🇯🇴"
+    },
+    "awayTeam": {
+      "name": "Argentina",
+      "code": "ARG",
+      "flag": "🇦🇷"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-28T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m60",
+    "group": "J",
+    "matchNumber": 60,
+    "homeTeam": {
+      "name": "Argélia",
+      "code": "ALG",
+      "flag": "🇩🇿"
+    },
+    "awayTeam": {
+      "name": "Áustria",
+      "code": "AUT",
+      "flag": "🇦🇹"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-28T02:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m61",
+    "group": "K",
+    "matchNumber": 61,
+    "homeTeam": {
+      "name": "Portugal",
+      "code": "POR",
+      "flag": "🇵🇹"
+    },
+    "awayTeam": {
+      "name": "República Democrática do Congo",
+      "code": "COD",
+      "flag": "🇨🇩"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-17T17:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m62",
+    "group": "K",
+    "matchNumber": 62,
+    "homeTeam": {
+      "name": "Uzbequistão",
+      "code": "UZB",
+      "flag": "🇺🇿"
+    },
+    "awayTeam": {
+      "name": "Colômbia",
+      "code": "COL",
+      "flag": "🇨🇴"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-18T00:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m63",
+    "group": "K",
+    "matchNumber": 63,
+    "homeTeam": {
+      "name": "Portugal",
+      "code": "POR",
+      "flag": "🇵🇹"
+    },
+    "awayTeam": {
+      "name": "Uzbequistão",
+      "code": "UZB",
+      "flag": "🇺🇿"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-23T17:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m64",
+    "group": "K",
+    "matchNumber": 64,
+    "homeTeam": {
+      "name": "Colômbia",
+      "code": "COL",
+      "flag": "🇨🇴"
+    },
+    "awayTeam": {
+      "name": "República Democrática do Congo",
+      "code": "COD",
+      "flag": "🇨🇩"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-23T03:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m65",
+    "group": "K",
+    "matchNumber": 65,
+    "homeTeam": {
+      "name": "Colômbia",
+      "code": "COL",
+      "flag": "🇨🇴"
+    },
+    "awayTeam": {
+      "name": "Portugal",
+      "code": "POR",
+      "flag": "🇵🇹"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-27T23:30:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m66",
+    "group": "K",
+    "matchNumber": 66,
+    "homeTeam": {
+      "name": "República Democrática do Congo",
+      "code": "COD",
+      "flag": "🇨🇩"
+    },
+    "awayTeam": {
+      "name": "Uzbequistão",
+      "code": "UZB",
+      "flag": "🇺🇿"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-27T23:30:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m67",
+    "group": "L",
+    "matchNumber": 67,
+    "homeTeam": {
+      "name": "Inglaterra",
+      "code": "ENG",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+    },
+    "awayTeam": {
+      "name": "Croácia",
+      "code": "CRO",
+      "flag": "🇭🇷"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-17T20:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m68",
+    "group": "L",
+    "matchNumber": 68,
+    "homeTeam": {
+      "name": "Gana",
+      "code": "GHA",
+      "flag": "🇬🇭"
+    },
+    "awayTeam": {
+      "name": "Panamá",
+      "code": "PAN",
+      "flag": "🇵🇦"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-17T23:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m69",
+    "group": "L",
+    "matchNumber": 69,
+    "homeTeam": {
+      "name": "Inglaterra",
+      "code": "ENG",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+    },
+    "awayTeam": {
+      "name": "Gana",
+      "code": "GHA",
+      "flag": "🇬🇭"
+    },
+    "stadium": "Estadio Azteca",
+    "scheduledAt": "2026-06-23T20:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m70",
+    "group": "L",
+    "matchNumber": 70,
+    "homeTeam": {
+      "name": "Panamá",
+      "code": "PAN",
+      "flag": "🇵🇦"
+    },
+    "awayTeam": {
+      "name": "Croácia",
+      "code": "CRO",
+      "flag": "🇭🇷"
+    },
+    "stadium": "Lumen Field",
+    "scheduledAt": "2026-06-23T23:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m71",
+    "group": "L",
+    "matchNumber": 71,
+    "homeTeam": {
+      "name": "Panamá",
+      "code": "PAN",
+      "flag": "🇵🇦"
+    },
+    "awayTeam": {
+      "name": "Inglaterra",
+      "code": "ENG",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+    },
+    "stadium": "MetLife Stadium",
+    "scheduledAt": "2026-06-27T21:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  },
+  {
+    "id": "m72",
+    "group": "L",
+    "matchNumber": 72,
+    "homeTeam": {
+      "name": "Croácia",
+      "code": "CRO",
+      "flag": "🇭🇷"
+    },
+    "awayTeam": {
+      "name": "Gana",
+      "code": "GHA",
+      "flag": "🇬🇭"
+    },
+    "stadium": "SoFi Stadium",
+    "scheduledAt": "2026-06-27T21:00:00Z",
+    "status": "scheduled",
+    "result": {
+      "homeGoals": null,
+      "awayGoals": null
+    }
+  }
+]

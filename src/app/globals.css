@@ -1,26 +1,205 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  --font-mono: var(--font-geist-mono, ui-monospace, monospace);
+  --font-heading: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  /* Custom animations */
+  --animate-score-bump: score-bump 0.25s ease-out;
+  --animate-save-flash: save-flash 0.4s ease-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* ── Bolão Copa 2026 dark theme ── */
+  --background: #03080d;
+  --foreground: #f5f5f5;
+  --card: #0c1318;
+  --card-foreground: #f5f5f5;
+  --popover: #0c1318;
+  --popover-foreground: #f5f5f5;
+  /* Primary: orange (#009C3B = Tailwind orange-500) */
+  --primary: #009C3B;
+  --primary-foreground: #03080d;
+  --secondary: #151d24;
+  --secondary-foreground: #f5f5f5;
+  --muted: #151d24;
+  --muted-foreground: #7a8a97;
+  --accent: #009C3B;
+  --accent-foreground: #03080d;
+  --destructive: #ef4444;
+  --destructive-foreground: #f5f5f5;
+  --border: #1e2d38;
+  --input: #151d24;
+  --ring: #009C3B;
+  /* Charts */
+  --chart-1: #009C3B;   /* orange */
+  --chart-2: #f43f5e;   /* red */
+  --chart-3: #22c55e;   /* green */
+  --chart-4: #14b8a6;   /* teal */
+  --chart-5: #a855f7;   /* purple */
+  --radius: 0.75rem;
+  --sidebar: #0c1318;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #009C3B;
+  --sidebar-primary-foreground: #03080d;
+  --sidebar-accent: #151d24;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: #1e2d38;
+  --sidebar-ring: #009C3B;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Keyframe animations ── */
+
+@keyframes score-bump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); color: #009C3B; }
+  100% { transform: scale(1); }
+}
+
+@keyframes save-flash {
+  0%   { background-color: #009C3B; }
+  60%  { background-color: #22c55e; }
+  100% { background-color: #009C3B; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-right {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounce-in {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* ── Utility classes ── */
+
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
+.animate-scale-in {
+  animation: scale-in 0.25s ease-out both;
+}
+.animate-slide-right {
+  animation: slide-right 0.3s ease-out both;
+}
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out both;
+}
+.animate-score-bump {
+  animation: var(--animate-score-bump);
+}
+
+/* Stagger helpers */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+/* ── Login gradient background ── */
+.login-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(249 115 22 / 0.18), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 80%, rgb(34 197 94 / 0.12), transparent),
+    #03080d;
+}
+
+/* ── Gold gradient text ── */
+.gold-text {
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.orange-text {
+  background: linear-gradient(135deg, #fdba74, #009C3B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2d3f4d; }
+
+/* ── Hide scrollbar but keep scroll ── */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ── Active tab indicator ── */
+.nav-active-pill {
+  background: rgb(249 115 22 / 0.15);
+  border-radius: 12px;
 }

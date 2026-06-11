@@ -1,0 +1,58 @@
+[
+  {
+    "id": "458f78eb-3224-4c8a-893a-f6445ff6de36",
+    "userId": "u1",
+    "matchId": "m1",
+    "homeGoals": 0,
+    "awayGoals": 0,
+    "points": 0,
+    "pointBreakdown": {
+      "type": "zero",
+      "value": 0
+    },
+    "createdAt": "2026-06-11T16:38:39.563Z",
+    "updatedAt": "2026-06-11T16:38:39.563Z"
+  },
+  {
+    "id": "0f37772e-3bf9-46f6-971b-fc9054d32ffb",
+    "userId": "u2",
+    "matchId": "m1",
+    "homeGoals": 2,
+    "awayGoals": 1,
+    "points": 18,
+    "pointBreakdown": {
+      "type": "exact",
+      "value": 18
+    },
+    "createdAt": "2026-06-11T16:29:14.058Z",
+    "updatedAt": "2026-06-11T16:31:10.011Z"
+  },
+  {
+    "id": "6933cae2-f143-48c2-9ad4-7c764d16ca58",
+    "userId": "u4",
+    "matchId": "m1",
+    "homeGoals": 3,
+    "awayGoals": 1,
+    "points": 12,
+    "pointBreakdown": {
+      "type": "winner_plus_goals",
+      "value": 12
+    },
+    "createdAt": "2026-06-11T16:29:32.660Z",
+    "updatedAt": "2026-06-11T16:31:10.011Z"
+  },
+  {
+    "id": "18807580-e041-413f-bfa7-c24aa4d4ebb2",
+    "userId": "u1",
+    "matchId": "m2",
+    "homeGoals": 0,
+    "awayGoals": 0,
+    "points": 0,
+    "pointBreakdown": {
+      "type": "zero",
+      "value": 0
+    },
+    "createdAt": "2026-06-11T16:39:03.024Z",
+    "updatedAt": "2026-06-11T16:39:03.024Z"
+  }
+]
