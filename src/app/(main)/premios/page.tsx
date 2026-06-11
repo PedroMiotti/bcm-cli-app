@@ -8,7 +8,7 @@ const prizes = [
     icon: "🥈",
     label: "Vice-Campeão",
     title: "2º LUGAR",
-    value: 0,
+    value: 40,
     highlight: false,
     desc: "Prêmio para quem ficar logo atrás do líder na reta final.",
   },
@@ -17,7 +17,7 @@ const prizes = [
     icon: "🥇",
     label: "CAMPEÃO DO BOLÃO",
     title: "CAMPEÃO",
-    value: 0,
+    value: 100,
     highlight: true,
     desc: "O maior pontuador da Copa leva o prêmio máximo.",
   },
@@ -107,7 +107,7 @@ export default function PremiosPage() {
         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
           Premio Total em Jogo
         </p>
-        <p className="text-4xl font-black text-primary tabular-nums">R$ 700</p>
+        <p className="text-4xl font-black text-primary tabular-nums">R$ 140 + BONUS</p>
         <p className="text-xs text-muted-foreground mt-1">distribuídos entre os 3 primeiros</p>
       </motion.div>
 

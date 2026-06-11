@@ -179,7 +179,7 @@ export default function RankingPage() {
                 </div>
                 <div className="min-w-0">
                   <p className={`text-xs font-semibold truncate ${isMe ? "text-primary" : ""}`}>
-                    {entry.displayName}
+                    {entry.displayName.toUpperCase()}
                   </p>
                   <p className="text-[10px] text-primary/60">{isMe ? `você - @${entry.username}` : `@${entry.username}`}</p>
                 </div>

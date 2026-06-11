@@ -16,7 +16,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { userId, matchId, homeGoals, awayGoals } = body
 
-  if (!userId || !matchId || homeGoals === undefined || awayGoals === undefined) {
+  if (
+    !userId ||
+    !matchId ||
+    !Number.isInteger(homeGoals) ||
+    !Number.isInteger(awayGoals) ||
+    homeGoals < 0 ||
+    awayGoals < 0
+  ) {
     return NextResponse.json({ error: "Dados incompletos" }, { status: 400 })
   }
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getMatch, updateMatch, getPredictions, upsertPrediction } from "@/lib/db"
+import { getMatch, updateMatch, getPredictionsByMatch, upsertPrediction } from "@/lib/db"
 import { calculatePoints } from "@/lib/scoring"
 
 export async function POST(req: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     homeGoals !== undefined &&
     awayGoals !== undefined
   ) {
-    const predictions = (await getPredictions()).filter((p) => p.matchId === matchId)
+    const predictions = await getPredictionsByMatch(matchId)
     for (const pred of predictions) {
       const breakdown = calculatePoints(pred.homeGoals, pred.awayGoals, homeGoals, awayGoals)
       await upsertPrediction({

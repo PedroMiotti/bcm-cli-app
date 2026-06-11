@@ -169,22 +169,28 @@ export async function upsertPrediction(prediction: Prediction): Promise<void> {
 
   const { data: existing } = await supabase
     .from("predictions")
-    .select("id, created_at")
+    .select("id")
     .eq("user_id", prediction.userId)
     .eq("match_id", prediction.matchId)
     .maybeSingle()
 
-  const row = predictionToRow({
-    ...prediction,
-    id: existing?.id ?? prediction.id,
-    createdAt: existing?.created_at ?? prediction.createdAt,
-  })
-
-  const { error } = await supabase.from("predictions").upsert(row, {
-    onConflict: "user_id,match_id",
-  })
-
-  if (error) throw new Error(`upsertPrediction: ${error.message}`)
+  if (existing) {
+    const { error } = await supabase
+      .from("predictions")
+      .update({
+        home_goals: prediction.homeGoals,
+        away_goals: prediction.awayGoals,
+        points: prediction.points,
+        point_breakdown: prediction.pointBreakdown,
+        updated_at: prediction.updatedAt,
+      })
+      .eq("id", existing.id)
+    if (error) throw new Error(`upsertPrediction: ${error.message}`)
+  } else {
+    const row = predictionToRow({ ...prediction, createdAt: new Date().toISOString() })
+    const { error } = await supabase.from("predictions").insert(row)
+    if (error) throw new Error(`upsertPrediction: ${error.message}`)
+  }
 }
 
 export { matchToRow, predictionToRow }

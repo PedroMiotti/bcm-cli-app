@@ -6,10 +6,7 @@ import type { Match, Prediction } from "@/lib/types"
 import GroupFilter from "@/components/GroupFilter"
 import MatchCard from "@/components/MatchCard"
 import { motion, AnimatePresence } from "framer-motion"
-import { AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react"
-
-const DEADLINE = new Date("2026-06-11T12:00:00Z")
-const DEADLINE_LABEL = "11/06 às 09h00"
+import { CheckCircle2, ChevronRight } from "lucide-react"
 
 export default function JogosPage() {
   const user = useAuthStore((s) => s.user)
@@ -23,11 +20,13 @@ export default function JogosPage() {
     Promise.all([
       fetch("/api/matches").then((r) => r.json()),
       fetch(`/api/predictions?userId=${user.id}`).then((r) => r.json()),
-    ]).then(([m, p]) => {
-      setMatches(m)
-      setPredictions(p)
-      setLoading(false)
-    })
+    ])
+      .then(([m, p]) => {
+        setMatches(m)
+        setPredictions(p)
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [user])
 
   const predMap = useMemo(
@@ -49,8 +48,6 @@ export default function JogosPage() {
   const totalMatches = matches.length
   const pct = totalMatches > 0 ? Math.round((totalPalpitados / totalMatches) * 100) : 0
   const allDone = totalPalpitados === totalMatches && totalMatches > 0
-  const now = new Date()
-  const deadlinePassed = now >= DEADLINE
 
   const groupMatches = useMemo(
     () => matches.filter((m) => m.group === selectedGroup).sort((a, b) => a.matchNumber - b.matchNumber),
@@ -64,6 +61,7 @@ export default function JogosPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: user.id, matchId, homeGoals, awayGoals }),
     })
+    if (!res.ok) return
     const saved: Prediction = await res.json()
     setPredictions((prev) => {
       const idx = prev.findIndex((p) => p.matchId === matchId)
@@ -89,27 +87,8 @@ export default function JogosPage() {
 
   return (
     <div className="flex flex-col pb-2">
-      {/* Deadline / Done banner */}
+      {/* Done banner */}
       <AnimatePresence>
-        {!deadlinePassed && !allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mx-4 mt-4 rounded-2xl bg-destructive/10 border border-destructive/30 px-4 py-3"
-          >
-            <div className="flex items-start gap-2.5">
-              <AlertTriangle size={15} className="text-destructive mt-0.5 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-destructive">FALTAM POUCOS DIAS!</p>
-                <p className="text-xs text-destructive/80 mt-0.5">
-                  O prazo para palpitar vai até dia <span className="font-bold">{DEADLINE_LABEL}</span>.
-                  Bora completar seus {totalMatches} palpites para não ficar de fora!
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
         {allDone && (
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}

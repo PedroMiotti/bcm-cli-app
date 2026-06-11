@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getMatches, updateMatch, getPredictions, upsertPrediction } from "@/lib/db"
+import { getMatches, updateMatch, getPredictionsByMatch, upsertPrediction } from "@/lib/db"
 import { calculatePoints } from "@/lib/scoring"
 import type { Match } from "@/lib/types"
 
@@ -24,7 +24,7 @@ function mapStatus(apiStatus: string): Match["status"] {
 }
 
 async function recalcMatch(matchId: string, homeGoals: number, awayGoals: number) {
-  const predictions = (await getPredictions()).filter((p) => p.matchId === matchId)
+  const predictions = await getPredictionsByMatch(matchId)
   for (const pred of predictions) {
     const breakdown = calculatePoints(pred.homeGoals, pred.awayGoals, homeGoals, awayGoals)
     await upsertPrediction({
