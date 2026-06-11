@@ -1,6 +1,21 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+const thirdPlaceChoices = [
+  "1 caixa de lokal",
+  "Palestra sobre One Piece. Palestrantes: Pedro, Leo, Thiago e Nicao",
+  "25 minutos de Futvolei com o caco",
+  "Assistir jogo do São Paulo com a narração do Thiago",
+]
 
 const prizes = [
   {
@@ -33,6 +48,8 @@ const prizes = [
 ]
 
 export default function PremiosPage() {
+  const [choicesOpen, setChoicesOpen] = useState(false)
+
   return (
     <div className="flex flex-col items-center gap-6 p-4 pt-8">
       {/* Title */}
@@ -88,14 +105,48 @@ export default function PremiosPage() {
               {prize.desc}
             </p>
 
-            <div className={`text-2xl font-black tabular-nums tracking-tight ${
-              prize.highlight ? "text-primary" : "text-foreground"
-            }`}>
-              R$ {prize.value}
-            </div>
+            {prize.pos === 3 ? (
+              <Button
+                size="sm"
+                className="w-full font-bold"
+                onClick={() => setChoicesOpen(true)}
+              >
+                Escolha
+              </Button>
+            ) : (
+              <div className={`text-2xl font-black tabular-nums tracking-tight ${
+                prize.highlight ? "text-primary" : "text-foreground"
+              }`}>
+                R$ {prize.value}
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
+
+      <Dialog open={choicesOpen} onOpenChange={setChoicesOpen}>
+        <DialogContent className="max-w-sm bg-card border-border/60">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black">
+              🥉 Prêmio do 3º lugar
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            O terceiro colocado escolhe um dos prêmios abaixo:
+          </p>
+          <ul className="space-y-2">
+            {thirdPlaceChoices.map((choice, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2.5 rounded-xl bg-secondary/60 border border-border/40 px-3 py-2.5 text-sm leading-snug"
+              >
+                <span className="text-primary font-black shrink-0">{i + 1}.</span>
+                {choice}
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
 
       {/* Total prize pool */}
       <motion.div
