@@ -31,7 +31,7 @@
     "id": "u5",
     "username": "guguinha.banheira",
     "displayName": "Gu",
-    "role": "participant",
+    "role": "admin",
     "description": ""
   },
   {
@@ -80,6 +80,13 @@
     "id": "u14",
     "username": "nick.psy",
     "displayName": "Nicão",
+    "role": "participant",
+    "description": ""
+  },
+  {
+    "id": "u15",
+    "username": "bral.mostra.a.stella.porfavor",
+    "displayName": "Bral",
     "role": "participant",
     "description": ""
   },
