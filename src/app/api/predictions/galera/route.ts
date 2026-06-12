@@ -18,7 +18,15 @@ export async function GET(req: NextRequest) {
     Date.now() >= new Date(match.scheduledAt).getTime()
 
   if (!kickedOff) {
-    return NextResponse.json({ locked: true, predictions: [] })
+    const allPredictions = await getPredictionsByMatch(matchId)
+    const participants = getUsers().filter((u) => u.role === "participant")
+    const predictedIds = new Set(allPredictions.map((p) => p.userId))
+    return NextResponse.json({
+      locked: true,
+      predictions: [],
+      hasPrediction: participants.filter((u) => predictedIds.has(u.id)).map((u) => u.displayName),
+      noPrediction: participants.filter((u) => !predictedIds.has(u.id)).map((u) => u.displayName),
+    })
   }
 
   const predictions = await getPredictionsByMatch(matchId)

@@ -40,7 +40,11 @@ function getInitials(name: string) {
 export default function GaleraModal({ open, onClose, matchId, match }: Props) {
   const [locked, setLocked] = useState(true)
   const [palpites, setPalpites] = useState<Palpite[]>([])
+  const [hasPrediction, setHasPrediction] = useState<string[]>([])
+  const [noPrediction, setNoPrediction] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+
+  const isFinished = match.status === "finished"
 
   useEffect(() => {
     if (!open) return
@@ -49,10 +53,14 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
       .then((r) => r.json())
       .then((data) => {
         setLocked(data.locked)
-        setPalpites(data.predictions ?? [])
+        setHasPrediction(data.hasPrediction ?? [])
+        setNoPrediction(data.noPrediction ?? [])
+        const predictions: Palpite[] = data.predictions ?? []
+        if (isFinished) predictions.sort((a, b) => b.points - a.points)
+        setPalpites(predictions)
       })
       .finally(() => setLoading(false))
-  }, [open, matchId])
+  }, [open, matchId, isFinished])
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -94,20 +102,54 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center gap-3 py-8 text-center"
+              className="flex flex-col gap-4"
             >
-              <div className="w-14 h-14 rounded-2xl bg-secondary border border-border flex items-center justify-center">
-                <Lock size={22} className="text-muted-foreground" />
-              </div>
-              <div>
-                <p className="font-bold text-sm">Palpites bloqueados</p>
-                <p className="text-xs text-muted-foreground mt-1 max-w-[220px] leading-relaxed">
-                  Os palpites dos outros participantes liberam automaticamente no apito inicial do jogo.
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Lock size={12} />
+                <p className="text-[10px] font-bold uppercase tracking-widest">
+                  Palpites revelados no apito inicial
                 </p>
               </div>
+
+              {hasPrediction.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-bold text-green-400 uppercase tracking-wide mb-2">
+                    Já palpitaram ({hasPrediction.length})
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {hasPrediction.map((name) => (
+                      <div key={name} className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-lg px-2 py-1">
+                        <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center text-[9px] font-bold text-green-400">
+                          {getInitials(name)}
+                        </div>
+                        <span className="text-[11px] font-medium">{name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {noPrediction.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-2">
+                    Aguardando ({noPrediction.length})
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {noPrediction.map((name) => (
+                      <div key={name} className="flex items-center gap-1.5 bg-secondary/60 border border-border/30 rounded-lg px-2 py-1">
+                        <div className="w-5 h-5 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-muted-foreground">
+                          {getInitials(name)}
+                        </div>
+                        <span className="text-[11px] font-medium text-muted-foreground">{name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={onClose}
-                className="mt-2 bg-secondary hover:bg-border text-sm font-semibold rounded-xl px-6 py-2 transition-colors"
+                className="mt-1 w-full bg-secondary hover:bg-border text-sm font-bold rounded-xl py-2.5 transition-colors"
               >
                 FECHAR
               </button>

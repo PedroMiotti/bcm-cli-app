@@ -240,8 +240,7 @@ export default function MatchCard({ match, prediction, onSave, index = 0 }: Prop
 
             {locked ? (
               <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary/60 rounded-full px-2 py-0.5 border border-border/50">
-                <Lock size={9} />
-                <span>Bloqueado</span>
+                <Lock size={12} />
               </div>
             ) : (
               <AnimatePresence mode="wait">
