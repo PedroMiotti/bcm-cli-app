@@ -6,7 +6,7 @@ import type { Match, Prediction } from "@/lib/types"
 import GroupFilter from "@/components/GroupFilter"
 import MatchCard from "@/components/MatchCard"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircle2, ChevronRight } from "lucide-react"
+import { CheckCircle2, ChevronDown, ChevronRight } from "lucide-react"
 
 export default function JogosPage() {
   const user = useAuthStore((s) => s.user)
@@ -14,6 +14,7 @@ export default function JogosPage() {
   const [predictions, setPredictions] = useState<Prediction[]>([])
   const [selectedGroup, setSelectedGroup] = useState("A")
   const [loading, setLoading] = useState(true)
+  const [showDaySection, setShowDaySection] = useState(true)
 
   useEffect(() => {
     if (!user) return
@@ -48,6 +49,24 @@ export default function JogosPage() {
   const totalMatches = matches.length
   const pct = totalMatches > 0 ? Math.round((totalPalpitados / totalMatches) * 100) : 0
   const allDone = totalPalpitados === totalMatches && totalMatches > 0
+
+  const { todayMatches, tomorrowMatches } = useMemo(() => {
+    const fmt = (d: Date) =>
+      new Intl.DateTimeFormat("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric", month: "2-digit", day: "2-digit",
+      }).format(d)
+    const now = new Date()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const todayStr = fmt(now)
+    const tomorrowStr = fmt(tomorrow)
+    const sorted = [...matches].sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
+    return {
+      todayMatches: sorted.filter((m) => fmt(new Date(m.scheduledAt)) === todayStr),
+      tomorrowMatches: sorted.filter((m) => fmt(new Date(m.scheduledAt)) === tomorrowStr),
+    }
+  }, [matches])
 
   const groupMatches = useMemo(
     () => matches.filter((m) => m.group === selectedGroup).sort((a, b) => a.matchNumber - b.matchNumber),
@@ -87,6 +106,116 @@ export default function JogosPage() {
 
   return (
     <div className="flex flex-col pb-2">
+      {/* Today and tomorrow games */}
+      {(todayMatches.length > 0 || tomorrowMatches.length > 0) && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 }}
+          className="mt-4 px-4"
+        >
+          <button
+            onClick={() => setShowDaySection((v) => !v)}
+            className="flex items-center justify-between w-full mb-2 group"
+          >
+            <p className="text-xs font-black text-muted-foreground uppercase tracking-wide">
+              Jogos do Dia
+            </p>
+            <motion.div
+              animate={{ rotate: showDaySection ? 0 : -90 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronDown size={14} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+            </motion.div>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {showDaySection && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-2 gap-3 pb-1">
+          {(["today", "tomorrow"] as const).map((day) => {
+            const dayMatches = day === "today" ? todayMatches : tomorrowMatches
+            const label = day === "today" ? "Hoje" : "Amanhã"
+            return (
+              <div key={day}>
+                <p className="text-xs font-black text-muted-foreground uppercase tracking-wide mb-2">{label}</p>
+                {dayMatches.length === 0 ? (
+                  <p className="text-[10px] text-muted-foreground/50 italic">Sem jogos.</p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {dayMatches.map((match) => {
+                      const timeStr = new Intl.DateTimeFormat("pt-BR", {
+                        hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo",
+                      }).format(new Date(match.scheduledAt))
+                      const isLive = match.status === "live"
+                      const isFinished = match.status === "finished"
+                      const hasScore = match.result.homeGoals !== null
+
+                      return (
+                        <div
+                          key={match.id}
+                          className={`rounded-xl border px-2.5 py-2 flex flex-col gap-1.5 transition-colors ${
+                            isLive
+                              ? "bg-primary/10 border-primary/30"
+                              : isFinished
+                              ? "bg-secondary/40 border-border/40"
+                              : "bg-card border-border/60"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            {isLive ? (
+                              <span className="flex items-center gap-1 text-[9px] font-bold text-primary uppercase tracking-wide">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                Ao Vivo
+                              </span>
+                            ) : (
+                              <span className="text-[9px] text-muted-foreground font-semibold">{timeStr}</span>
+                            )}
+                            <span className="text-[9px] text-muted-foreground font-medium">Grupo {match.group}</span>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-1">
+                            <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                              <span className="text-lg leading-none">{match.homeTeam.flag}</span>
+                              <span className="text-[9px] font-black truncate">{match.homeTeam.code}</span>
+                            </div>
+
+                            <div className="shrink-0 text-center">
+                              {(isLive || isFinished) && hasScore ? (
+                                <span className={`text-xs font-black tabular-nums ${isLive ? "text-primary" : ""}`}>
+                                  {match.result.homeGoals}–{match.result.awayGoals}
+                                </span>
+                              ) : (
+                                <span className="text-xs font-bold text-muted-foreground">×</span>
+                              )}
+                            </div>
+
+                            <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
+                              <span className="text-lg leading-none">{match.awayTeam.flag}</span>
+                              <span className="text-[9px] font-black truncate">{match.awayTeam.code}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+
       {/* Done banner */}
       <AnimatePresence>
         {allDone && (
