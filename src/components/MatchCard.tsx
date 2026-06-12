@@ -41,6 +41,8 @@ export default function MatchCard({ match, prediction, onSave, index = 0 }: Prop
   const locked = match.status !== "scheduled" || Date.now() >= kickoff - 5 * 60 * 1000
   const hasPrediction = prediction !== undefined
   const isDirty = homeGoals !== (prediction?.homeGoals ?? 0) || awayGoals !== (prediction?.awayGoals ?? 0)
+  const isFinished = match.status === "finished"
+  const hasResult = match.result.homeGoals !== null
 
   function bump(side: "home" | "away") {
     setBumping(side)
@@ -120,71 +122,93 @@ export default function MatchCard({ match, prediction, onSave, index = 0 }: Prop
               <span className="text-[9px] text-muted-foreground font-mono">{match.homeTeam.code}</span>
             </div>
 
-            {/* Score controls */}
+            {/* Score controls / Final score */}
             <div className="flex items-center gap-2 shrink-0">
-              {/* Home score */}
-              <div className="flex flex-col items-center gap-0.5">
-                {!locked && (
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    onClick={() => changeHome(1)}
-                    className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
-                  >
-                    <ChevronUp size={14} strokeWidth={2.5} />
-                  </motion.button>
-                )}
-                <motion.span
-                  key={homeGoals}
-                  initial={bumping === "home" ? { scale: 1.4, color: "#f97316" } : false}
-                  animate={{ scale: 1, color: "#f5f5f5" }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
-                  className="text-3xl sm:text-4xl font-black tabular-nums leading-none w-10 text-center"
-                >
-                  {homeGoals}
-                </motion.span>
-                {!locked && (
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    onClick={() => changeHome(-1)}
-                    className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
-                  >
-                    <ChevronDown size={14} strokeWidth={2.5} />
-                  </motion.button>
-                )}
-              </div>
+              {isFinished && hasResult ? (
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Resultado</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-3xl sm:text-4xl font-black tabular-nums leading-none w-10 text-center">
+                      {match.result.homeGoals}
+                    </span>
+                    <span className="text-xl font-black text-border leading-none">×</span>
+                    <span className="text-3xl sm:text-4xl font-black tabular-nums leading-none w-10 text-center">
+                      {match.result.awayGoals}
+                    </span>
+                  </div>
+                  {hasPrediction && (
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
+                      Palpite: {prediction!.homeGoals}×{prediction!.awayGoals}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {/* Home score */}
+                  <div className="flex flex-col items-center gap-0.5">
+                    {!locked && (
+                      <motion.button
+                        whileTap={{ scale: 0.8 }}
+                        onClick={() => changeHome(1)}
+                        className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      >
+                        <ChevronUp size={14} strokeWidth={2.5} />
+                      </motion.button>
+                    )}
+                    <motion.span
+                      key={homeGoals}
+                      initial={bumping === "home" ? { scale: 1.4, color: "#f97316" } : false}
+                      animate={{ scale: 1, color: "#f5f5f5" }}
+                      transition={{ duration: 0.22, ease: "easeOut" }}
+                      className="text-3xl sm:text-4xl font-black tabular-nums leading-none w-10 text-center"
+                    >
+                      {homeGoals}
+                    </motion.span>
+                    {!locked && (
+                      <motion.button
+                        whileTap={{ scale: 0.8 }}
+                        onClick={() => changeHome(-1)}
+                        className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      >
+                        <ChevronDown size={14} strokeWidth={2.5} />
+                      </motion.button>
+                    )}
+                  </div>
 
-              <span className="text-xl font-black text-border leading-none">×</span>
+                  <span className="text-xl font-black text-border leading-none">×</span>
 
-              {/* Away score */}
-              <div className="flex flex-col items-center gap-0.5">
-                {!locked && (
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    onClick={() => changeAway(1)}
-                    className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
-                  >
-                    <ChevronUp size={14} strokeWidth={2.5} />
-                  </motion.button>
-                )}
-                <motion.span
-                  key={awayGoals + 100}
-                  initial={bumping === "away" ? { scale: 1.4, color: "#f97316" } : false}
-                  animate={{ scale: 1, color: "#f5f5f5" }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
-                  className="text-3xl sm:text-4xl font-black tabular-nums leading-none w-10 text-center"
-                >
-                  {awayGoals}
-                </motion.span>
-                {!locked && (
-                  <motion.button
-                    whileTap={{ scale: 0.8 }}
-                    onClick={() => changeAway(-1)}
-                    className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
-                  >
-                    <ChevronDown size={14} strokeWidth={2.5} />
-                  </motion.button>
-                )}
-              </div>
+                  {/* Away score */}
+                  <div className="flex flex-col items-center gap-0.5">
+                    {!locked && (
+                      <motion.button
+                        whileTap={{ scale: 0.8 }}
+                        onClick={() => changeAway(1)}
+                        className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      >
+                        <ChevronUp size={14} strokeWidth={2.5} />
+                      </motion.button>
+                    )}
+                    <motion.span
+                      key={awayGoals + 100}
+                      initial={bumping === "away" ? { scale: 1.4, color: "#f97316" } : false}
+                      animate={{ scale: 1, color: "#f5f5f5" }}
+                      transition={{ duration: 0.22, ease: "easeOut" }}
+                      className="text-3xl sm:text-4xl font-black tabular-nums leading-none w-10 text-center"
+                    >
+                      {awayGoals}
+                    </motion.span>
+                    {!locked && (
+                      <motion.button
+                        whileTap={{ scale: 0.8 }}
+                        onClick={() => changeAway(-1)}
+                        className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                      >
+                        <ChevronDown size={14} strokeWidth={2.5} />
+                      </motion.button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Away team */}
@@ -245,16 +269,13 @@ export default function MatchCard({ match, prediction, onSave, index = 0 }: Prop
           </div>
         </div>
 
-        {/* Result badge for finished matches */}
-        {match.status === "finished" && match.result.homeGoals !== null && prediction && (
+        {/* Points badge for finished matches */}
+        {isFinished && hasResult && prediction && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="px-3 pb-3 flex items-center justify-between"
+            className="px-3 pb-3 flex justify-end"
           >
-            <span className="text-[10px] text-muted-foreground">
-              Resultado: {match.result.homeGoals} × {match.result.awayGoals}
-            </span>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${POINT_TYPE_STYLE[prediction.pointBreakdown.type]}`}>
               +{prediction.points}pts · {POINT_TYPE_LABEL[prediction.pointBreakdown.type]}
             </span>
