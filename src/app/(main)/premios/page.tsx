@@ -15,6 +15,9 @@ const thirdPlaceChoices = [
   "Palestra sobre One Piece. Palestrantes: Pedro, Leo, Thiago e Nicao",
   "25 minutos de Futvolei com o caco",
   "Assistir jogo do São Paulo com a narração do Thiago",
+  "Sleepover com o Gu (50% de chance dele acordar pelado)",
+  "1 hora Karoke com a Sté (Apenas Jonas Brothers e Hanna Montana)",
+  "Presença do nosso chapeiro na sua festa de aniversário ou casamento."
 ]
 
 const prizes = [
