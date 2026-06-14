@@ -77,6 +77,20 @@
     "description": ""
   },
   {
+    "id": "u12",
+    "username": "laurinha.dias",
+    "displayName": "Lalinha",
+    "role": "participant",
+    "description": ""
+  },
+  {
+    "id": "u13",
+    "username": "fabinho.esqueiro",
+    "displayName": "Fabinho Scarel",
+    "role": "participant",
+    "description": ""
+  },
+  {
     "id": "u14",
     "username": "nick.psy",
     "displayName": "Nicão",
@@ -91,16 +105,9 @@
     "description": ""
   },
   {
-    "id": "u12",
-    "username": "laurinha.dias",
-    "displayName": "Lalinha",
-    "role": "participant",
-    "description": ""
-  },
-  {
-    "id": "u13",
-    "username": "fabinho.esqueiro",
-    "displayName": "Fabinho Scarel",
+    "id": "u16",
+    "username": "thiagao",
+    "displayName": "Thiagão",
     "role": "participant",
     "description": ""
   }

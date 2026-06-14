@@ -6,7 +6,16 @@ import type { Match, Prediction } from "@/lib/types"
 import GroupFilter from "@/components/GroupFilter"
 import MatchCard from "@/components/MatchCard"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircle2, ChevronDown, ChevronRight } from "lucide-react"
+import { CheckCircle2, ChevronDown, ChevronRight, Pencil } from "lucide-react"
+import QuickPredictModal from "@/components/QuickPredictModal"
+
+const MINI_PT_STYLE: Record<string, string> = {
+  exact: "text-orange-400 bg-orange-500/15 border-orange-500/25",
+  winner_plus_goals: "text-yellow-400 bg-yellow-500/15 border-yellow-500/25",
+  winner: "text-green-400 bg-green-500/15 border-green-500/25",
+  one_team_goals: "text-blue-400 bg-blue-500/15 border-blue-500/25",
+  zero: "text-muted-foreground bg-secondary border-border/40",
+}
 
 export default function JogosPage() {
   const user = useAuthStore((s) => s.user)
@@ -15,6 +24,7 @@ export default function JogosPage() {
   const [selectedGroup, setSelectedGroup] = useState("A")
   const [loading, setLoading] = useState(true)
   const [showDaySection, setShowDaySection] = useState(true)
+  const [openMatch, setOpenMatch] = useState<Match | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -150,22 +160,27 @@ export default function JogosPage() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     {dayMatches.map((match) => {
+                      const pred = predMap[match.id]
                       const timeStr = new Intl.DateTimeFormat("pt-BR", {
                         hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo",
                       }).format(new Date(match.scheduledAt))
                       const isLive = match.status === "live"
                       const isFinished = match.status === "finished"
                       const hasScore = match.result.homeGoals !== null
+                      const isLocked = match.status !== "scheduled" || Date.now() >= new Date(match.scheduledAt).getTime() - 5 * 60 * 1000
 
                       return (
-                        <div
+                        <button
                           key={match.id}
-                          className={`rounded-xl border px-2.5 py-2 flex flex-col gap-1.5 transition-colors ${
+                          onClick={() => setOpenMatch(match)}
+                          className={`rounded-xl border px-2.5 py-2 flex flex-col gap-1.5 transition-all text-left w-full active:scale-[0.98] ${
                             isLive
-                              ? "bg-primary/10 border-primary/30"
+                              ? "bg-primary/10 border-primary/30 hover:bg-primary/15"
                               : isFinished
-                              ? "bg-secondary/40 border-border/40"
-                              : "bg-card border-border/60"
+                              ? "bg-secondary/40 border-border/40 hover:bg-secondary/60"
+                              : pred
+                              ? "bg-card border-primary/20 hover:border-primary/35"
+                              : "bg-card border-border/60 hover:border-border"
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -201,7 +216,34 @@ export default function JogosPage() {
                               <span className="text-[9px] font-black truncate">{match.awayTeam.code}</span>
                             </div>
                           </div>
-                        </div>
+
+                          {/* Prediction / CTA row — fixed height so all cards stay the same size */}
+                          <div className={`border-t border-border/20 h-6 flex items-center px-0.5 ${isFinished && pred ? "justify-between" : "justify-center"}`}>
+                            {isFinished && pred ? (
+                              <>
+                                <span className="text-[9px] font-medium text-muted-foreground tabular-nums">
+                                  {pred.homeGoals}–{pred.awayGoals}
+                                </span>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${MINI_PT_STYLE[pred.pointBreakdown.type]}`}>
+                                  +{pred.points}pts
+                                </span>
+                              </>
+                            ) : pred ? (
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border text-muted-foreground border-border/50 bg-secondary/60 tabular-nums">
+                                {pred.homeGoals}–{pred.awayGoals}
+                              </span>
+                            ) : !isLocked ? (
+                              <span className="flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border text-primary/70 border-primary/25 bg-primary/8">
+                                <Pencil size={7} strokeWidth={2.5} />
+                                Palpitar
+                              </span>
+                            ) : (
+                              <span className="text-[9px] font-medium px-2 py-0.5 rounded-full border text-muted-foreground/40 border-border/25">
+                                Sem palpite
+                              </span>
+                            )}
+                          </div>
+                        </button>
                       )
                     })}
                   </div>
@@ -308,6 +350,15 @@ export default function JogosPage() {
           </div>
         </motion.div>
       </AnimatePresence>
+
+      {/* Quick predict modal for day cards */}
+      <QuickPredictModal
+        open={!!openMatch}
+        onClose={() => setOpenMatch(null)}
+        match={openMatch}
+        prediction={openMatch ? predMap[openMatch.id] : undefined}
+        onSave={handleSave}
+      />
 
       {/* Match cards — 2-col grid */}
       <AnimatePresence mode="wait">

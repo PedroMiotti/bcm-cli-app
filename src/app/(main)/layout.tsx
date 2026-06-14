@@ -2,6 +2,7 @@ import AuthGuard from "@/components/AuthGuard"
 import Header from "@/components/Header"
 import MatchBanner from "@/components/MatchBanner"
 import BottomNav from "@/components/BottomNav"
+import WhatsNewModal from "@/components/WhatsNewModal"
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <BottomNav />
+        <WhatsNewModal />
       </div>
     </AuthGuard>
   )

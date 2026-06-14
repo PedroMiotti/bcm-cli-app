@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Lock, MapPin } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { Lock, MapPin, ChevronDown, ChevronUp, Zap } from "lucide-react"
+import { ModalDrawer } from "@/components/ModalDrawer"
 import { motion, AnimatePresence } from "framer-motion"
 import type { Match } from "@/lib/types"
+import { calculatePoints } from "@/lib/scoring"
 
 interface Palpite {
   displayName: string
@@ -43,12 +44,19 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
   const [hasPrediction, setHasPrediction] = useState<string[]>([])
   const [noPrediction, setNoPrediction] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [showSimulator, setShowSimulator] = useState(false)
+  const [simHome, setSimHome] = useState(match.result.homeGoals ?? 0)
+  const [simAway, setSimAway] = useState(match.result.awayGoals ?? 0)
+  const [simBumping, setSimBumping] = useState<"home" | "away" | null>(null)
 
   const isFinished = match.status === "finished"
 
   useEffect(() => {
     if (!open) return
     setLoading(true)
+    setShowSimulator(false)
+    setSimHome(match.result.homeGoals ?? 0)
+    setSimAway(match.result.awayGoals ?? 0)
     fetch(`/api/predictions/galera?matchId=${matchId}`)
       .then((r) => r.json())
       .then((data) => {
@@ -62,11 +70,26 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
       .finally(() => setLoading(false))
   }, [open, matchId, isFinished])
 
+  function simBump(side: "home" | "away") {
+    setSimBumping(side)
+    setTimeout(() => setSimBumping(null), 280)
+  }
+
+  const simResults = useMemo(
+    () =>
+      [...palpites]
+        .map((p) => {
+          const bd = calculatePoints(p.homeGoals, p.awayGoals, simHome, simAway)
+          return { ...p, simPoints: bd.value, simType: bd.type }
+        })
+        .sort((a, b) => b.simPoints - a.simPoints),
+    [palpites, simHome, simAway]
+  )
+
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-sm bg-card border-border/60 p-0 overflow-hidden">
+    <ModalDrawer open={open} onOpenChange={(o) => !o && onClose()}>
         {/* Header */}
-        <div className="bg-secondary/50 px-5 py-4 border-b border-border/40">
+        <div className="bg-secondary/50 px-5 py-4 border-b border-border/40 shrink-0">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
             GRUPO {match.group} · PALPITES DA GALERA
           </p>
@@ -93,7 +116,7 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
         </div>
 
         {/* Body */}
-        <div className="p-5">
+        <div className="flex-1 overflow-y-auto p-5">
           {loading ? (
             <div className="flex justify-center py-10">
               <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -163,7 +186,7 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
                 PALPITES DE TODOS ({palpites.length})
               </p>
-              <div className="space-y-1.5 max-h-72 overflow-y-auto scrollbar-hide">
+              <div className="space-y-1.5">
                 {palpites.map((p, i) => (
                   <motion.div
                     key={i}
@@ -191,6 +214,132 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
                   </motion.div>
                 ))}
               </div>
+
+              {/* Simulator */}
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowSimulator((v) => !v)}
+                  className="w-full flex items-center justify-between py-2.5 border-t border-border/30 group"
+                >
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest group-hover:text-foreground transition-colors">
+                    <Zap size={10} className="text-primary/70" />
+                    Simular placar
+                  </div>
+                  <motion.div
+                    animate={{ rotate: showSimulator ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={12} className="text-muted-foreground" />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence>
+                  {showSimulator && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.22, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      {/* Score input */}
+                      <div className="flex items-center justify-center gap-6 py-3 bg-secondary/40 rounded-xl mb-3 mt-1">
+                        {/* Home */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl leading-none">{match.homeTeam.flag}</span>
+                          <div className="flex flex-col items-center gap-0.5">
+                            <motion.button
+                              whileTap={{ scale: 0.8 }}
+                              onClick={() => { setSimHome((v) => Math.min(v + 1, 20)); simBump("home") }}
+                              className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                            >
+                              <ChevronUp size={14} strokeWidth={2.5} />
+                            </motion.button>
+                            <motion.span
+                              key={simHome}
+                              initial={simBumping === "home" ? { scale: 1.4, color: "#f97316" } : false}
+                              animate={{ scale: 1, color: "#f5f5f5" }}
+                              transition={{ duration: 0.22, ease: "easeOut" }}
+                              className="text-2xl font-black tabular-nums leading-none w-8 text-center"
+                            >
+                              {simHome}
+                            </motion.span>
+                            <motion.button
+                              whileTap={{ scale: 0.8 }}
+                              onClick={() => { setSimHome((v) => Math.max(v - 1, 0)); simBump("home") }}
+                              className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                            >
+                              <ChevronDown size={14} strokeWidth={2.5} />
+                            </motion.button>
+                          </div>
+                        </div>
+
+                        <span className="text-lg font-black text-border leading-none">×</span>
+
+                        {/* Away */}
+                        <div className="flex items-center gap-2">
+                          <div className="flex flex-col items-center gap-0.5">
+                            <motion.button
+                              whileTap={{ scale: 0.8 }}
+                              onClick={() => { setSimAway((v) => Math.min(v + 1, 20)); simBump("away") }}
+                              className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                            >
+                              <ChevronUp size={14} strokeWidth={2.5} />
+                            </motion.button>
+                            <motion.span
+                              key={simAway + 100}
+                              initial={simBumping === "away" ? { scale: 1.4, color: "#f97316" } : false}
+                              animate={{ scale: 1, color: "#f5f5f5" }}
+                              transition={{ duration: 0.22, ease: "easeOut" }}
+                              className="text-2xl font-black tabular-nums leading-none w-8 text-center"
+                            >
+                              {simAway}
+                            </motion.span>
+                            <motion.button
+                              whileTap={{ scale: 0.8 }}
+                              onClick={() => { setSimAway((v) => Math.max(v - 1, 0)); simBump("away") }}
+                              className="w-7 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                            >
+                              <ChevronDown size={14} strokeWidth={2.5} />
+                            </motion.button>
+                          </div>
+                          <span className="text-xl leading-none">{match.awayTeam.flag}</span>
+                        </div>
+                      </div>
+
+                      {/* Simulated ranking */}
+                      <p className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest mb-2">
+                        Pontuação simulada
+                      </p>
+                      <div className="space-y-1.5">
+                        {simResults.map((p, i) => (
+                          <div
+                            key={p.displayName}
+                            className="flex items-center justify-between bg-secondary/60 rounded-xl px-3 py-2 border border-border/30"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-muted-foreground tabular-nums w-4">{i + 1}º</span>
+                              <div className="w-7 h-7 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
+                                {getInitials(p.displayName)}
+                              </div>
+                              <span className="text-sm font-medium truncate max-w-[100px]">{p.displayName}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-base font-black tabular-nums">
+                                {p.homeGoals} × {p.awayGoals}
+                              </span>
+                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-lg border min-w-[26px] text-center ${TYPE_STYLE[p.simType]}`}>
+                                +{TYPE_LABEL[p.simType]}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <button
                 onClick={onClose}
                 className="mt-4 w-full bg-secondary hover:bg-border text-sm font-bold rounded-xl py-2.5 transition-colors"
@@ -200,7 +349,6 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
             </div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+    </ModalDrawer>
   )
 }

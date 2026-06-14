@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react"
 import { useAuthStore } from "@/store/auth"
 import type { RankingEntry } from "@/lib/types"
-import { motion } from "framer-motion"
-import { RefreshCw, Cloud } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { RefreshCw, Cloud, MousePointerClick } from "lucide-react"
+import UserPredictionsModal from "@/components/UserPredictionsModal"
 
 function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
@@ -31,6 +32,13 @@ export default function RankingPage() {
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [selectedEntry, setSelectedEntry] = useState<RankingEntry | null>(null)
+  const [showHint, setShowHint] = useState(false)
+
+  function dismissHint() {
+    setShowHint(false)
+    localStorage.setItem("bolao:ranking_tap_hint", "1")
+  }
 
   async function loadRanking(showRefreshing = false) {
     if (showRefreshing) setRefreshing(true)
@@ -45,6 +53,19 @@ export default function RankingPage() {
   }
 
   useEffect(() => { loadRanking() }, [])
+
+  useEffect(() => {
+    if (loading) return
+    if (localStorage.getItem("bolao:ranking_tap_hint")) return
+    const t = setTimeout(() => setShowHint(true), 600)
+    return () => clearTimeout(t)
+  }, [loading])
+
+  useEffect(() => {
+    if (!showHint) return
+    const t = setTimeout(dismissHint, 3500)
+    return () => clearTimeout(t)
+  }, [showHint])
 
   const top3 = ranking.slice(0, 3)
   const timeStr = lastUpdate
@@ -161,7 +182,8 @@ export default function RankingPage() {
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.18 + idx * 0.03, duration: 0.25 }}
-              className={`grid grid-cols-[2.5rem_1fr_repeat(4,2rem)_3rem] gap-1 items-center px-3 py-2.5 border-b border-border/20 last:border-0 transition-colors ${isMe ? "bg-primary/8 border-l-2 border-l-primary" : "hover:bg-secondary/20"
+              onClick={() => { dismissHint(); setSelectedEntry(entry) }}
+              className={`grid grid-cols-[2.5rem_1fr_repeat(4,2rem)_3rem] gap-1 items-center px-3 py-2.5 border-b border-border/20 last:border-0 transition-colors cursor-pointer active:scale-[0.99] ${isMe ? "bg-primary/8 border-l-2 border-l-primary hover:bg-primary/12" : "hover:bg-secondary/30"
                 }`}
             >
               <div className="flex items-center gap-1">
@@ -225,6 +247,36 @@ export default function RankingPage() {
       <p className="text-[10px] text-center text-muted-foreground pb-2">
         Exibindo {ranking.length} participantes · Última atualização: {timeStr}
       </p>
+
+      <AnimatePresence>
+        {showHint && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10, transition: { duration: 0.25 } }}
+            transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            className="fixed bottom-20 left-0 right-0 z-40 flex justify-center px-6 pointer-events-none"
+          >
+            <div className="flex items-center gap-2.5 bg-card/95 backdrop-blur-md border border-primary/25 shadow-lg shadow-black/20 rounded-full px-4 py-2.5 pointer-events-auto">
+              <motion.div
+                animate={{ scale: [1, 1.18, 1] }}
+                transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+              >
+                <MousePointerClick size={15} className="text-primary" />
+              </motion.div>
+              <span className="text-xs font-semibold text-foreground/80 whitespace-nowrap">
+                Toque para ver os palpites de alguém
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <UserPredictionsModal
+        open={!!selectedEntry}
+        onClose={() => setSelectedEntry(null)}
+        entry={selectedEntry}
+      />
     </div>
   )
 }

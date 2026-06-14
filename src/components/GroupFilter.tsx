@@ -12,7 +12,7 @@ interface Props {
 
 export default function GroupFilter({ selected, onSelect, progress }: Props) {
   return (
-    <div className="overflow-x-auto scrollbar-hide">
+    <div className="overflow-x-auto scrollbar-primary">
       <div className="flex gap-1.5 px-4 pb-1 min-w-max">
         {GROUPS.map((g) => {
           const { done = 0, total = 6 } = progress[g] ?? {}

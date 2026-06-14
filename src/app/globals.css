@@ -198,6 +198,19 @@
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
+/* ── Primary-colored thin scrollbar ── */
+.scrollbar-primary {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+.scrollbar-primary::-webkit-scrollbar { height: 3px; width: 3px; }
+.scrollbar-primary::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-primary::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 999px;
+  opacity: 0.7;
+}
+
 /* ── Active tab indicator ── */
 .nav-active-pill {
   background: rgb(249 115 22 / 0.15);
