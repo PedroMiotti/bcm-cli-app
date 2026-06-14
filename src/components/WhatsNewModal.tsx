@@ -91,7 +91,7 @@ export default function WhatsNewModal() {
           onClick={handleClose}
           className="w-full bg-primary text-primary-foreground font-bold text-sm rounded-xl py-3 hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
         >
-          Entendi, bora jogar! 🚀
+          Entendi 🚀
         </motion.button>
       </div>
     </ModalDrawer>
