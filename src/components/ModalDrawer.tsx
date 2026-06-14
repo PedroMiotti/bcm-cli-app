@@ -2,8 +2,8 @@
 
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/useIsMobile"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { Drawer } from "vaul"
 
 interface Props {
   open: boolean
@@ -17,22 +17,26 @@ export function ModalDrawer({ open, onOpenChange, children, className }: Props) 
 
   if (isMobile) {
     return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="bottom"
-          showCloseButton={false}
-          className={cn(
-            "rounded-t-3xl bg-card border-border/60 p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden",
-            className
-          )}
-        >
-          {/* iOS-style drag handle */}
-          <div className="flex justify-center pt-3 pb-1 shrink-0">
-            <div className="w-9 h-1 rounded-full bg-muted-foreground/25" />
-          </div>
-          {children}
-        </SheetContent>
-      </Sheet>
+      <Drawer.Root open={open} onOpenChange={onOpenChange}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 z-50 bg-black/60" />
+          <Drawer.Content
+            className={cn(
+              "fixed bottom-0 left-0 right-0 z-50",
+              "flex flex-col max-h-[90svh]",
+              "rounded-t-3xl bg-card border border-border/60 border-b-0",
+              "focus:outline-none",
+              className
+            )}
+          >
+            {/* Drag handle */}
+            <div className="flex justify-center pt-3 pb-1 shrink-0">
+              <div className="w-9 h-1 rounded-full bg-muted-foreground/25" />
+            </div>
+            {children}
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     )
   }
 
@@ -45,6 +49,7 @@ export function ModalDrawer({ open, onOpenChange, children, className }: Props) 
           className
         )}
       >
+        <DialogTitle className="sr-only">Modal</DialogTitle>
         {children}
       </DialogContent>
     </Dialog>

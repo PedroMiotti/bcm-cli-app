@@ -153,7 +153,7 @@ export default function JogosPage() {
             const dayMatches = day === "today" ? todayMatches : tomorrowMatches
             const label = day === "today" ? "Hoje" : "Amanhã"
             return (
-              <div key={day}>
+              <div key={day} className="min-w-0">
                 <p className="text-xs font-black text-muted-foreground uppercase tracking-wide mb-2">{label}</p>
                 {dayMatches.length === 0 ? (
                   <p className="text-[10px] text-muted-foreground/50 italic">Sem jogos.</p>
@@ -183,7 +183,7 @@ export default function JogosPage() {
                               : "bg-card border-border/60 hover:border-border"
                           }`}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between w-full">
                             {isLive ? (
                               <span className="flex items-center gap-1 text-[9px] font-bold text-primary uppercase tracking-wide">
                                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -195,7 +195,7 @@ export default function JogosPage() {
                             <span className="text-[9px] text-muted-foreground font-medium">Grupo {match.group}</span>
                           </div>
 
-                          <div className="flex items-center justify-between gap-1">
+                          <div className="flex items-center justify-between gap-1 w-full">
                             <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
                               <span className="text-lg leading-none">{match.homeTeam.flag}</span>
                               <span className="text-[9px] font-black truncate">{match.homeTeam.code}</span>
@@ -218,7 +218,7 @@ export default function JogosPage() {
                           </div>
 
                           {/* Prediction / CTA row — fixed height so all cards stay the same size */}
-                          <div className={`border-t border-border/20 h-6 flex items-center px-0.5 ${isFinished && pred ? "justify-between" : "justify-center"}`}>
+                          <div className={`border-t border-border/20 h-6 flex items-center px-0.5 w-full ${isFinished && pred ? "justify-between" : "justify-center"}`}>
                             {isFinished && pred ? (
                               <>
                                 <span className="text-[9px] font-medium text-muted-foreground tabular-nums">
