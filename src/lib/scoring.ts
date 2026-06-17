@@ -29,11 +29,8 @@ export function calculatePoints(
   const realWinner = getWinner(realHome, realAway)
   const correctWinner = predWinner === realWinner
 
-  const homeGoalsMatch = predHome === realHome && realHome > 0
-  const awayGoalsMatch = predAway === realAway && realAway > 0
-
-  // Winner + goals of one team (zero goals don't count as a meaningful match)
-  if (correctWinner && (homeGoalsMatch || awayGoalsMatch)) {
+  // Winner + goals of one team
+  if (correctWinner && (predHome === realHome || predAway === realAway)) {
     return { type: "winner_plus_goals", value: POINTS.WINNER_PLUS_GOALS }
   }
 
@@ -42,8 +39,8 @@ export function calculatePoints(
     return { type: "winner", value: POINTS.WINNER }
   }
 
-  // Wrong winner but got one team's score right (zero goals don't count)
-  if (homeGoalsMatch || awayGoalsMatch) {
+  // Wrong winner but got one team's score right
+  if (predHome === realHome || predAway === realAway) {
     return { type: "one_team_goals", value: POINTS.ONE_TEAM_GOALS }
   }
 
