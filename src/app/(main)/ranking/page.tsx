@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
 import type { RankingEntry } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { RefreshCw, Cloud, MousePointerClick } from "lucide-react"
-import UserPredictionsModal from "@/components/UserPredictionsModal"
 
 function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
@@ -28,11 +28,11 @@ const CAT_COLS = [
 
 export default function RankingPage() {
   const user = useAuthStore((s) => s.user)
+  const router = useRouter()
   const [ranking, setRanking] = useState<RankingEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
-  const [selectedEntry, setSelectedEntry] = useState<RankingEntry | null>(null)
   const [showHint, setShowHint] = useState(false)
 
   function dismissHint() {
@@ -182,7 +182,7 @@ export default function RankingPage() {
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.18 + idx * 0.03, duration: 0.25 }}
-              onClick={() => { dismissHint(); setSelectedEntry(entry) }}
+              onClick={() => { dismissHint(); router.push(`/ranking/${entry.userId}`) }}
               className={`grid grid-cols-[2.5rem_1fr_repeat(4,2rem)_3rem] gap-1 items-center px-3 py-2.5 border-b border-border/20 last:border-0 transition-colors cursor-pointer active:scale-[0.99] ${isMe ? "bg-primary/8 border-l-2 border-l-primary hover:bg-primary/12" : "hover:bg-secondary/30"
                 }`}
             >
@@ -265,18 +265,13 @@ export default function RankingPage() {
                 <MousePointerClick size={15} className="text-primary" />
               </motion.div>
               <span className="text-xs font-semibold text-foreground/80 whitespace-nowrap">
-                Toque para ver os palpites de alguém
+                Toque para ver as estatísticas de alguém
               </span>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <UserPredictionsModal
-        open={!!selectedEntry}
-        onClose={() => setSelectedEntry(null)}
-        entry={selectedEntry}
-      />
     </div>
   )
 }
