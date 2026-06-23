@@ -4,7 +4,7 @@ import { calculatePoints } from "@/lib/scoring"
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { matchId, homeGoals, awayGoals, status } = body
+  const { matchId, homeGoals, awayGoals, status, scheduledAt } = body
 
   if (!matchId) {
     return NextResponse.json({ error: "matchId required" }, { status: 400 })
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       homeGoals: homeGoals ?? match.result.homeGoals,
       awayGoals: awayGoals ?? match.result.awayGoals,
     },
+    ...(scheduledAt !== undefined && { scheduledAt }),
   })
 
   // Recalculate points for all predictions on this match if finished

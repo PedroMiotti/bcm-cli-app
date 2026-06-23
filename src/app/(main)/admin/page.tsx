@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
 import type { Match } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
-import { RefreshCw, Play, CheckCircle2, ChevronUp, ChevronDown, AlertTriangle, Wifi } from "lucide-react"
+import { RefreshCw, Play, CheckCircle2, ChevronUp, ChevronDown, AlertTriangle, Wifi, Clock } from "lucide-react"
 
 type StatusFilter = "all" | "scheduled" | "live" | "finished"
 
@@ -33,6 +33,7 @@ interface SyncResult {
 interface AdminMatch extends Match {
   editHome: number
   editAway: number
+  editScheduledAt: string
 }
 
 export default function AdminPage() {
@@ -57,19 +58,20 @@ export default function AdminPage() {
       ...m,
       editHome: m.result.homeGoals ?? 0,
       editAway: m.result.awayGoals ?? 0,
+      editScheduledAt: m.scheduledAt.slice(0, 16), // "YYYY-MM-DDTHH:mm" for datetime-local
     })))
     setLoading(false)
   }, [])
 
   useEffect(() => { loadMatches() }, [loadMatches])
 
-  async function updateMatch(matchId: string, status: Match["status"], homeGoals: number, awayGoals: number) {
+  async function updateMatch(matchId: string, status: Match["status"], homeGoals: number, awayGoals: number, scheduledAt?: string) {
     setSaving(matchId)
     try {
       await fetch("/api/matches/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matchId, status, homeGoals, awayGoals }),
+        body: JSON.stringify({ matchId, status, homeGoals, awayGoals, scheduledAt }),
       })
       await loadMatches()
     } finally {
@@ -269,6 +271,20 @@ export default function AdminPage() {
                       className="overflow-hidden border-t border-border/40"
                     >
                       <div className="px-4 py-4 space-y-4">
+                        {/* Time editor */}
+                        <div className="flex items-center gap-3 bg-secondary/40 rounded-xl px-3 py-2">
+                          <Clock size={14} className="text-muted-foreground shrink-0" />
+                          <label className="text-xs text-muted-foreground shrink-0">Horário</label>
+                          <input
+                            type="datetime-local"
+                            value={match.editScheduledAt}
+                            onChange={(e) => setMatches((prev) => prev.map((m) =>
+                              m.id !== match.id ? m : { ...m, editScheduledAt: e.target.value }
+                            ))}
+                            className="flex-1 bg-transparent text-sm font-mono text-foreground outline-none"
+                          />
+                        </div>
+
                         {/* Teams + score editor */}
                         <div className="flex items-center justify-center gap-6">
                           {/* Home */}
@@ -312,40 +328,52 @@ export default function AdminPage() {
                         {/* Action buttons */}
                         <div className="flex gap-2">
                           {match.status === "scheduled" && (
-                            <button
-                              onClick={() => updateMatch(match.id, "live", match.editHome, match.editAway)}
-                              disabled={isSaving}
-                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500/15 border border-green-500/30 text-green-400 text-sm font-bold hover:bg-green-500/25 disabled:opacity-60 transition-all"
-                            >
-                              <Play size={13} />
-                              Iniciar Jogo
-                            </button>
+                            <>
+                              <button
+                                onClick={() => updateMatch(match.id, "scheduled", match.editHome, match.editAway, match.editScheduledAt)}
+                                disabled={isSaving}
+                                title="Salvar horário"
+                                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-secondary border border-border text-foreground hover:bg-secondary/80 disabled:opacity-60 transition-all"
+                              >
+                                {isSaving ? <RefreshCw size={13} className="animate-spin" /> : <Clock size={13} />}
+                              </button>
+                              <button
+                                onClick={() => updateMatch(match.id, "live", match.editHome, match.editAway, match.editScheduledAt)}
+                                disabled={isSaving}
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500/15 border border-green-500/30 text-green-400 text-sm font-bold hover:bg-green-500/25 disabled:opacity-60 transition-all"
+                              >
+                                <Play size={13} />
+                                Iniciar Jogo
+                              </button>
+                              <button
+                                onClick={() => updateMatch(match.id, "finished", match.editHome, match.editAway, match.editScheduledAt)}
+                                disabled={isSaving}
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-bold hover:bg-primary/25 disabled:opacity-60 transition-all"
+                              >
+                                {isSaving ? <RefreshCw size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+                                {match.editHome} × {match.editAway} — Encerrar
+                              </button>
+                            </>
                           )}
 
-                          {(match.status === "live" || match.status === "scheduled") && (
+                          {match.status === "live" && (
                             <button
-                              onClick={() => updateMatch(match.id, "finished", match.editHome, match.editAway)}
+                              onClick={() => updateMatch(match.id, "finished", match.editHome, match.editAway, match.editScheduledAt)}
                               disabled={isSaving}
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 border border-primary/30 text-primary text-sm font-bold hover:bg-primary/25 disabled:opacity-60 transition-all"
                             >
-                              {isSaving
-                                ? <RefreshCw size={13} className="animate-spin" />
-                                : <CheckCircle2 size={13} />
-                              }
+                              {isSaving ? <RefreshCw size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
                               {match.editHome} × {match.editAway} — Encerrar
                             </button>
                           )}
 
                           {match.status === "finished" && (
                             <button
-                              onClick={() => updateMatch(match.id, "finished", match.editHome, match.editAway)}
+                              onClick={() => updateMatch(match.id, "finished", match.editHome, match.editAway, match.editScheduledAt)}
                               disabled={isSaving}
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-secondary border border-border text-foreground text-sm font-bold hover:bg-secondary/80 disabled:opacity-60 transition-all"
                             >
-                              {isSaving
-                                ? <RefreshCw size={13} className="animate-spin" />
-                                : <CheckCircle2 size={13} />
-                              }
+                              {isSaving ? <RefreshCw size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
                               Salvar Correção
                             </button>
                           )}
