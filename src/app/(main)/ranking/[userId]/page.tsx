@@ -16,6 +16,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  Cell,
 } from "recharts"
 import type { RankingEntry } from "@/lib/types"
 
@@ -176,6 +177,7 @@ export default function PlayerStatsPage({ params }: { params: Promise<{ userId: 
   const [comparedPlayerIds, setComparedPlayerIds] = useState<Set<string>>(new Set())
   const [comparedItemsCache, setComparedItemsCache] = useState<Map<string, PredictionItem[]>>(new Map())
   const [loadingPlayerIds, setLoadingPlayerIds] = useState<Set<string>>(new Set())
+  const [chartTab, setChartTab] = useState<"por-jogo" | "por-dia">("por-jogo")
 
   useEffect(() => {
     Promise.all([
@@ -240,6 +242,24 @@ export default function PlayerStatsPage({ params }: { params: Promise<{ userId: 
       : "—"
     : "—"
 
+  // ── By-day data (for secondary chart tab) ─────────────────────────────────
+  const byDayData = (() => {
+    const grouped = new Map<string, { date: string; points: number; ts: number }>()
+    for (const item of finishedWithPred) {
+      if (!item.prediction) continue
+      const d = new Date(item.match.scheduledAt)
+      const label = new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo",
+      }).format(d)
+      const existing = grouped.get(label)
+      if (existing) existing.points += item.prediction.points
+      else grouped.set(label, { date: label, points: item.prediction.points, ts: d.getTime() })
+    }
+    return Array.from(grouped.values())
+      .sort((a, b) => a.ts - b.ts)
+      .map(({ date, points }) => ({ date, points }))
+  })()
+
   // Color map: assign stable colors to comparison players by their position in ranking
   const otherPlayers = ranking.filter((e) => e.userId !== userId)
   const playerColorMap = new Map<string, string>([[userId, C.primary]])
@@ -273,6 +293,26 @@ export default function PlayerStatsPage({ params }: { params: Promise<{ userId: 
 
   const finishedItems = items.filter((i) => i.match.status === "finished")
   const upcomingItems = items.filter((i) => i.match.status !== "finished")
+
+  function ChartTabToggle() {
+    return (
+      <div className="flex gap-0.5 bg-secondary/60 rounded-lg p-0.5">
+        {(["por-jogo", "por-dia"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setChartTab(tab)}
+            className={`text-[10px] font-bold px-2 py-1 rounded-md transition-all ${
+              chartTab === tab
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab === "por-jogo" ? "Por Jogo" : "Por Dia"}
+          </button>
+        ))}
+      </div>
+    )
+  }
 
   // ── Loading / not found ──────────────────────────────────────────────────
   if (loading) {
@@ -404,107 +444,147 @@ export default function PlayerStatsPage({ params }: { params: Promise<{ userId: 
         transition={{ delay: 0.15 }}
         className="bg-card border border-border/60 rounded-2xl p-4"
       >
-        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
-          Pontos Acumulados
-        </h3>
+        {/* Header + tab toggle */}
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            Pontos Acumulados
+          </h3>
+          <ChartTabToggle />
+        </div>
 
-        {/* Player comparison selector */}
-        {otherPlayers.length > 0 && (
-          <div className="mb-4">
-            <p className="text-[10px] text-muted-foreground mb-2">Comparar com:</p>
-            <div className="flex gap-2 flex-wrap">
-              {otherPlayers.map((pEntry) => {
-                const isSelected = comparedPlayerIds.has(pEntry.userId)
-                const isLoading = loadingPlayerIds.has(pEntry.userId)
-                const color = playerColorMap.get(pEntry.userId) ?? C.muted
-                return (
-                  <button
-                    key={pEntry.userId}
-                    onClick={() => toggleComparison(pEntry.userId)}
-                    className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-xl border transition-all active:scale-95 ${
-                      isSelected
-                        ? "bg-card border-border/80 text-foreground"
-                        : "bg-secondary/40 border-border/30 text-muted-foreground hover:border-border/60"
-                    }`}
-                  >
-                    {isLoading ? (
-                      <span className="w-2 h-2 rounded-full border border-current border-t-transparent animate-spin shrink-0" />
-                    ) : (
-                      <span
-                        className="w-2 h-2 rounded-full shrink-0 transition-colors"
-                        style={{ background: isSelected ? color : C.muted }}
+        {/* Por Jogo tab */}
+        {chartTab === "por-jogo" && (
+          <>
+            {/* Player comparison selector */}
+            {otherPlayers.length > 0 && (
+              <div className="mb-4">
+                <p className="text-[10px] text-muted-foreground mb-2">Comparar com:</p>
+                <div className="flex gap-2 flex-wrap">
+                  {otherPlayers.map((pEntry) => {
+                    const isSelected = comparedPlayerIds.has(pEntry.userId)
+                    const isLoading = loadingPlayerIds.has(pEntry.userId)
+                    const color = playerColorMap.get(pEntry.userId) ?? C.muted
+                    return (
+                      <button
+                        key={pEntry.userId}
+                        onClick={() => toggleComparison(pEntry.userId)}
+                        className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-xl border transition-all active:scale-95 ${
+                          isSelected
+                            ? "bg-card border-border/80 text-foreground"
+                            : "bg-secondary/40 border-border/30 text-muted-foreground hover:border-border/60"
+                        }`}
+                      >
+                        {isLoading ? (
+                          <span className="w-2 h-2 rounded-full border border-current border-t-transparent animate-spin shrink-0" />
+                        ) : (
+                          <span
+                            className="w-2 h-2 rounded-full shrink-0 transition-colors"
+                            style={{ background: isSelected ? color : C.muted }}
+                          />
+                        )}
+                        {firstName(pEntry.displayName)}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {multiLineData.length < 2 ? (
+              <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+                {multiLineData.length === 0
+                  ? "Ainda não há jogos finalizados"
+                  : "Aguardando mais jogos..."}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={hasMultipleLines ? 200 : 170}>
+                <LineChart data={multiLineData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fill: C.muted, fontSize: 9 }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis tick={{ fill: C.muted, fontSize: 9 }} tickLine={false} axisLine={false} />
+                  <Tooltip content={<CustomTooltipLine />} cursor={{ stroke: C.border }} />
+                  {hasMultipleLines && (
+                    <Legend
+                      iconType="circle"
+                      iconSize={7}
+                      wrapperStyle={{ fontSize: 10, color: C.muted, paddingTop: 8 }}
+                    />
+                  )}
+                  <Line
+                    type="monotone"
+                    dataKey={userId}
+                    name={firstName(entry.displayName)}
+                    stroke={C.primary}
+                    strokeWidth={2.5}
+                    dot={false}
+                    activeDot={{ r: 4, fill: C.primary, stroke: C.card, strokeWidth: 2 }}
+                  />
+                  {Array.from(comparedPlayerIds).map((pid) => {
+                    if (!comparedItemsCache.has(pid)) return null
+                    const pEntry = ranking.find((e) => e.userId === pid)
+                    const color = playerColorMap.get(pid) ?? C.muted
+                    return (
+                      <Line
+                        key={pid}
+                        type="monotone"
+                        dataKey={pid}
+                        name={pEntry ? firstName(pEntry.displayName) : "?"}
+                        stroke={color}
+                        strokeWidth={2}
+                        dot={false}
+                        activeDot={{ r: 4, fill: color, stroke: C.card, strokeWidth: 2 }}
                       />
-                    )}
-                    {firstName(pEntry.displayName)}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+                    )
+                  })}
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </>
         )}
 
-        {multiLineData.length < 2 ? (
-          <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-            {multiLineData.length === 0
-              ? "Ainda não há jogos finalizados"
-              : "Aguardando mais jogos..."}
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={hasMultipleLines ? 200 : 170}>
-            <LineChart data={multiLineData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
-              <XAxis
-                dataKey="label"
-                tick={{ fill: C.muted, fontSize: 9 }}
-                tickLine={false}
-                axisLine={false}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                tick={{ fill: C.muted, fontSize: 9 }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip content={<CustomTooltipLine />} cursor={{ stroke: C.border }} />
-              {hasMultipleLines && (
-                <Legend
-                  iconType="circle"
-                  iconSize={7}
-                  wrapperStyle={{ fontSize: 10, color: C.muted, paddingTop: 8 }}
+        {/* Por Dia tab */}
+        {chartTab === "por-dia" && (
+          byDayData.length < 2 ? (
+            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+              Aguardando mais jogos finalizados…
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={170}>
+              <BarChart data={byDayData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }} barCategoryGap="35%">
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fill: C.muted, fontSize: 9 }}
+                  tickLine={false}
+                  axisLine={false}
                 />
-              )}
-
-              {/* Current player line */}
-              <Line
-                type="monotone"
-                dataKey={userId}
-                name={firstName(entry.displayName)}
-                stroke={C.primary}
-                strokeWidth={2.5}
-                dot={false}
-                activeDot={{ r: 4, fill: C.primary, stroke: C.card, strokeWidth: 2 }}
-              />
-
-              {/* Comparison player lines */}
-              {Array.from(comparedPlayerIds).map((pid) => {
-                if (!comparedItemsCache.has(pid)) return null
-                const pEntry = ranking.find((e) => e.userId === pid)
-                const color = playerColorMap.get(pid) ?? C.muted
-                return (
-                  <Line
-                    key={pid}
-                    type="monotone"
-                    dataKey={pid}
-                    name={pEntry ? firstName(pEntry.displayName) : "?"}
-                    stroke={color}
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, fill: color, stroke: C.card, strokeWidth: 2 }}
-                  />
-                )
-              })}
-            </LineChart>
-          </ResponsiveContainer>
+                <YAxis tick={{ fill: C.muted, fontSize: 9 }} tickLine={false} axisLine={false} />
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null
+                    return (
+                      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10 }} className="px-3 py-2 text-xs">
+                        <p style={{ color: C.muted }} className="font-bold mb-1">{label}</p>
+                        <p style={{ color: C.primary }} className="font-black">{payload[0].value} pts</p>
+                      </div>
+                    )
+                  }}
+                  cursor={{ fill: `${C.border}60` }}
+                />
+                <Bar dataKey="points" radius={[4, 4, 0, 0]}>
+                  {byDayData.map((_, i) => (
+                    <Cell key={i} fill={C.primary} opacity={0.75 + (i / byDayData.length) * 0.25} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )
         )}
       </motion.div>
 

@@ -5,6 +5,7 @@ import { Lock, MapPin, ChevronDown, ChevronUp, Zap } from "lucide-react"
 import { ModalDrawer } from "@/components/ModalDrawer"
 import { motion, AnimatePresence } from "framer-motion"
 import type { Match } from "@/lib/types"
+import { PHASE_LABELS } from "@/lib/types"
 import { calculatePoints } from "@/lib/scoring"
 
 interface Palpite {
@@ -91,7 +92,7 @@ export default function GaleraModal({ open, onClose, matchId, match }: Props) {
         {/* Header */}
         <div className="bg-secondary/50 px-5 py-4 border-b border-border/40 shrink-0">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-            GRUPO {match.group} · PALPITES DA GALERA
+            {match.phase === "grupo" ? `GRUPO ${match.group}` : PHASE_LABELS[match.phase].toUpperCase()} · PALPITES DA GALERA
           </p>
           <div className="flex items-center gap-3">
             <span className="text-2xl">{match.homeTeam.flag}</span>

@@ -5,6 +5,7 @@ import { ModalDrawer } from "@/components/ModalDrawer"
 import { ChevronUp, ChevronDown, Check, Lock, MapPin, Calendar, Users } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { Match, Prediction } from "@/lib/types"
+import { PHASE_LABELS } from "@/lib/types"
 import GaleraModal from "./GaleraModal"
 
 const POINT_TYPE_STYLE: Record<string, string> = {
@@ -106,7 +107,7 @@ export default function QuickPredictModal({ open, onClose, match, prediction, on
           <div className="bg-secondary/50 px-5 py-4 border-b border-border/40">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                GRUPO {safeMatch.group} · J#{safeMatch.matchNumber}
+                {safeMatch.phase === "grupo" ? `GRUPO ${safeMatch.group}` : PHASE_LABELS[safeMatch.phase].toUpperCase()} · J#{safeMatch.matchNumber}
               </span>
               {isLive && (
                 <span className="flex items-center gap-1.5 text-[10px] font-bold text-primary">

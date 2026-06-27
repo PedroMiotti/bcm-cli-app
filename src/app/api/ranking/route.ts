@@ -1,13 +1,23 @@
-import { NextResponse } from "next/server"
-import { getUsers, getPredictions } from "@/lib/db"
+import { NextRequest, NextResponse } from "next/server"
+import { getUsers, getPredictions, getMatches } from "@/lib/db"
 import type { RankingEntry } from "@/lib/types"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const phase = request.nextUrl.searchParams.get("phase")
+
+  let matchIds: Set<string> | null = null
+  if (phase) {
+    const allMatches = await getMatches()
+    matchIds = new Set(allMatches.filter((m) => m.phase === phase).map((m) => m.id))
+  }
+
   const users = getUsers()
   const predictions = await getPredictions()
 
   const ranking: RankingEntry[] = users.map((user) => {
-    const userPredictions = predictions.filter((p) => p.userId === user.id)
+    const userPredictions = predictions.filter(
+      (p) => p.userId === user.id && (!matchIds || matchIds!.has(p.matchId))
+    )
     const breakdown = { exact: 0, winnerPlusGoals: 0, winner: 0, oneTeamGoals: 0 }
     let totalPoints = 0
 

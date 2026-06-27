@@ -17,9 +17,24 @@ export interface MatchResult {
   awayGoals: number | null
 }
 
+export type MatchPhase = "grupo" | "mata_mata" | "oitavas" | "quartas" | "semi" | "terceiro" | "final"
+
+export const PHASE_ORDER: MatchPhase[] = ["grupo", "mata_mata", "oitavas", "quartas", "semi", "terceiro", "final"]
+
+export const PHASE_LABELS: Record<MatchPhase, string> = {
+  grupo:    "Fase de Grupos",
+  mata_mata: "16 Avos",
+  oitavas:  "Oitavas",
+  quartas:  "Quartas",
+  semi:     "Semifinal",
+  terceiro: "3º Lugar",
+  final:    "Final",
+}
+
 export interface Match {
   id: string
   group: string
+  phase: MatchPhase
   matchNumber: number
   homeTeam: Team
   awayTeam: Team

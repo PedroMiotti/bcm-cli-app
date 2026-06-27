@@ -1,13 +1,15 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
-import type { Match } from "@/lib/types"
+import type { Match, Team } from "@/lib/types"
+import { PHASE_LABELS, PHASE_ORDER, type MatchPhase } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
-import { RefreshCw, Play, CheckCircle2, ChevronUp, ChevronDown, AlertTriangle, Wifi, Clock } from "lucide-react"
+import { RefreshCw, Play, CheckCircle2, ChevronUp, ChevronDown, AlertTriangle, Wifi, Clock, Users, Search, X } from "lucide-react"
 
 type StatusFilter = "all" | "scheduled" | "live" | "finished"
+type PhaseFilter = MatchPhase | "all" | "today"
 
 const STATUS_LABEL: Record<Match["status"], string> = {
   scheduled: "Agendado",
@@ -34,6 +36,18 @@ interface AdminMatch extends Match {
   editHome: number
   editAway: number
   editScheduledAt: string
+  editHomeTeam?: Team
+  editAwayTeam?: Team
+}
+
+function isToday(iso: string): boolean {
+  const d = new Date(iso)
+  const now = new Date()
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  )
 }
 
 export default function AdminPage() {
@@ -43,10 +57,15 @@ export default function AdminPage() {
   const [matches, setMatches] = useState<AdminMatch[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<StatusFilter>("all")
+  const [phaseFilter, setPhaseFilter] = useState<PhaseFilter>("all")
   const [saving, setSaving] = useState<string | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  // Team picker state
+  const [teamPickerFor, setTeamPickerFor] = useState<{ matchId: string; side: "home" | "away" } | null>(null)
+  const [teamSearch, setTeamSearch] = useState("")
 
   useEffect(() => {
     if (user && user.role !== "admin") router.replace("/jogos")
@@ -58,25 +77,74 @@ export default function AdminPage() {
       ...m,
       editHome: m.result.homeGoals ?? 0,
       editAway: m.result.awayGoals ?? 0,
-      editScheduledAt: m.scheduledAt.slice(0, 16), // "YYYY-MM-DDTHH:mm" for datetime-local
+      editScheduledAt: m.scheduledAt.slice(0, 16),
     })))
     setLoading(false)
   }, [])
 
   useEffect(() => { loadMatches() }, [loadMatches])
 
-  async function updateMatch(matchId: string, status: Match["status"], homeGoals: number, awayGoals: number, scheduledAt?: string) {
+  // Derived: unique teams from all matches
+  const allTeams = useMemo<Team[]>(() => {
+    const seen = new Set<string>()
+    const teams: Team[] = []
+    for (const m of matches) {
+      if (!seen.has(m.homeTeam.code)) { seen.add(m.homeTeam.code); teams.push(m.homeTeam) }
+      if (!seen.has(m.awayTeam.code)) { seen.add(m.awayTeam.code); teams.push(m.awayTeam) }
+    }
+    return teams.sort((a, b) => a.name.localeCompare(b.name))
+  }, [matches])
+
+  // Available phases (only those with matches)
+  const availablePhases = useMemo<MatchPhase[]>(
+    () => PHASE_ORDER.filter((p) => matches.some((m) => m.phase === p)),
+    [matches]
+  )
+
+  async function updateMatch(
+    matchId: string,
+    status: Match["status"],
+    homeGoals: number,
+    awayGoals: number,
+    scheduledAt?: string,
+    homeTeam?: Team,
+    awayTeam?: Team,
+  ) {
     setSaving(matchId)
     try {
       await fetch("/api/matches/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matchId, status, homeGoals, awayGoals, scheduledAt }),
+        body: JSON.stringify({ matchId, status, homeGoals, awayGoals, scheduledAt, homeTeam, awayTeam }),
       })
       await loadMatches()
     } finally {
       setSaving(null)
       setExpandedId(null)
+    }
+  }
+
+  async function saveTeams(match: AdminMatch) {
+    const ht = match.editHomeTeam
+    const at = match.editAwayTeam
+    if (!ht && !at) return
+    setSaving(match.id)
+    try {
+      await fetch("/api/matches/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matchId: match.id,
+          status: match.status,
+          homeGoals: match.result.homeGoals,
+          awayGoals: match.result.awayGoals,
+          ...(ht && { homeTeam: ht }),
+          ...(at && { awayTeam: at }),
+        }),
+      })
+      await loadMatches()
+    } finally {
+      setSaving(null)
     }
   }
 
@@ -103,6 +171,19 @@ export default function AdminPage() {
     }))
   }
 
+  function pickTeam(team: Team) {
+    if (!teamPickerFor) return
+    const { matchId, side } = teamPickerFor
+    setMatches((prev) => prev.map((m) => {
+      if (m.id !== matchId) return m
+      return side === "home"
+        ? { ...m, editHomeTeam: team }
+        : { ...m, editAwayTeam: team }
+    }))
+    setTeamPickerFor(null)
+    setTeamSearch("")
+  }
+
   const counts = {
     all: matches.length,
     scheduled: matches.filter((m) => m.status === "scheduled").length,
@@ -110,7 +191,20 @@ export default function AdminPage() {
     finished: matches.filter((m) => m.status === "finished").length,
   }
 
-  const filtered = matches.filter((m) => filter === "all" || m.status === filter)
+  const filtered = matches.filter((m) => {
+    const statusOk = filter === "all" || m.status === filter
+    const phaseOk = phaseFilter === "all"
+      ? true
+      : phaseFilter === "today"
+        ? isToday(m.scheduledAt)
+        : m.phase === phaseFilter
+    return statusOk && phaseOk
+  })
+
+  const filteredTeams = useMemo(() => {
+    const q = teamSearch.trim().toLowerCase()
+    return q ? allTeams.filter((t) => t.name.toLowerCase().includes(q) || t.code.toLowerCase().includes(q)) : allTeams
+  }, [allTeams, teamSearch])
 
   if (!user || user.role !== "admin") return null
 
@@ -185,7 +279,7 @@ export default function AdminPage() {
         )}
       </AnimatePresence>
 
-      {/* Stats row */}
+      {/* Status filter tabs */}
       <div className="grid grid-cols-4 gap-2">
         {(["all", "scheduled", "live", "finished"] as StatusFilter[]).map((s) => (
           <button
@@ -205,6 +299,32 @@ export default function AdminPage() {
         ))}
       </div>
 
+      {/* Phase / Today filter chips */}
+      {(availablePhases.length > 1 || true) && (
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
+          {(["all", "today", ...availablePhases] as PhaseFilter[]).map((pf) => {
+            const label =
+              pf === "all" ? "Todos" :
+              pf === "today" ? "Hoje" :
+              PHASE_LABELS[pf as MatchPhase]
+            const active = phaseFilter === pf
+            return (
+              <button
+                key={pf}
+                onClick={() => setPhaseFilter(pf)}
+                className={`shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-xl border transition-all ${
+                  active
+                    ? "bg-primary/15 border-primary/40 text-primary"
+                    : "bg-card border-border/60 text-muted-foreground hover:border-border"
+                }`}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {/* Match list */}
       {loading ? (
         <div className="space-y-2">
@@ -217,6 +337,12 @@ export default function AdminPage() {
           {filtered.map((match, i) => {
             const isExpanded = expandedId === match.id
             const isSaving = saving === match.id
+            const effectiveHome = match.editHomeTeam ?? match.homeTeam
+            const effectiveAway = match.editAwayTeam ?? match.awayTeam
+            const hasTeamEdits = !!(match.editHomeTeam || match.editAwayTeam)
+            const groupLabel = match.phase === "grupo"
+              ? `G${match.group} #${match.matchNumber}`
+              : `${PHASE_LABELS[match.phase]} #${match.matchNumber}`
 
             return (
               <motion.div
@@ -231,27 +357,24 @@ export default function AdminPage() {
                   onClick={() => setExpandedId(isExpanded ? null : match.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/20 transition-colors text-left"
                 >
-                  {/* Status */}
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${STATUS_COLOR[match.status]}`}>
                     {STATUS_LABEL[match.status]}
                   </span>
 
-                  {/* Teams */}
                   <div className="flex-1 min-w-0 flex items-center gap-2">
-                    <span className="text-sm">{match.homeTeam.flag}</span>
-                    <span className="text-xs font-bold truncate">{match.homeTeam.code}</span>
+                    <span className="text-sm">{effectiveHome.flag}</span>
+                    <span className="text-xs font-bold truncate">{effectiveHome.code}</span>
                     <span className="text-xs text-muted-foreground font-black">
                       {match.result.homeGoals !== null
                         ? `${match.result.homeGoals} × ${match.result.awayGoals}`
-                        : "× "}
+                        : "×"}
                     </span>
-                    <span className="text-xs font-bold truncate">{match.awayTeam.code}</span>
-                    <span className="text-sm">{match.awayTeam.flag}</span>
+                    <span className="text-xs font-bold truncate">{effectiveAway.code}</span>
+                    <span className="text-sm">{effectiveAway.flag}</span>
                   </div>
 
-                  {/* Group + match number */}
                   <span className="text-[10px] text-muted-foreground shrink-0">
-                    G{match.group} #{match.matchNumber}
+                    {groupLabel}
                   </span>
 
                   <ChevronDown
@@ -285,15 +408,126 @@ export default function AdminPage() {
                           />
                         </div>
 
-                        {/* Teams + score editor */}
-                        <div className="flex items-center justify-center gap-6">
-                          {/* Home */}
-                          <div className="flex flex-col items-center gap-1">
-                            <span className="text-2xl">{match.homeTeam.flag}</span>
-                            <span className="text-xs font-bold">{match.homeTeam.name}</span>
+                        {/* Team picker (TBD) */}
+                        <div className="rounded-xl border border-border/40 overflow-hidden">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-secondary/30 border-b border-border/30">
+                            <Users size={12} className="text-muted-foreground" />
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Times</span>
+                            {hasTeamEdits && (
+                              <span className="ml-auto text-[9px] font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded-full">
+                                Editado
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 p-3">
+                            {/* Home team */}
+                            <button
+                              onClick={() => {
+                                setTeamPickerFor({ matchId: match.id, side: "home" })
+                                setTeamSearch("")
+                              }}
+                              className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${
+                                match.editHomeTeam
+                                  ? "border-amber-400/40 bg-amber-400/5"
+                                  : "border-border/60 bg-secondary/30 hover:bg-secondary/50"
+                              }`}
+                            >
+                              <span className="text-lg">{effectiveHome.flag}</span>
+                              <div className="flex-1 min-w-0 text-left">
+                                <p className="text-[11px] font-bold truncate">{effectiveHome.code}</p>
+                                <p className="text-[9px] text-muted-foreground truncate">{effectiveHome.name}</p>
+                              </div>
+                            </button>
+
+                            <span className="text-xs text-muted-foreground font-black shrink-0">×</span>
+
+                            {/* Away team */}
+                            <button
+                              onClick={() => {
+                                setTeamPickerFor({ matchId: match.id, side: "away" })
+                                setTeamSearch("")
+                              }}
+                              className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${
+                                match.editAwayTeam
+                                  ? "border-amber-400/40 bg-amber-400/5"
+                                  : "border-border/60 bg-secondary/30 hover:bg-secondary/50"
+                              }`}
+                            >
+                              <span className="text-lg">{effectiveAway.flag}</span>
+                              <div className="flex-1 min-w-0 text-left">
+                                <p className="text-[11px] font-bold truncate">{effectiveAway.code}</p>
+                                <p className="text-[9px] text-muted-foreground truncate">{effectiveAway.name}</p>
+                              </div>
+                            </button>
                           </div>
 
-                          {/* Score inputs */}
+                          {/* Inline team picker dropdown */}
+                          <AnimatePresence>
+                            {teamPickerFor?.matchId === match.id && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.15 }}
+                                className="overflow-hidden border-t border-border/30"
+                              >
+                                <div className="p-3 space-y-2">
+                                  <div className="flex items-center gap-2 bg-secondary/40 rounded-lg px-3 py-2">
+                                    <Search size={12} className="text-muted-foreground shrink-0" />
+                                    <input
+                                      autoFocus
+                                      value={teamSearch}
+                                      onChange={(e) => setTeamSearch(e.target.value)}
+                                      placeholder={`Buscar ${teamPickerFor.side === "home" ? "mandante" : "visitante"}…`}
+                                      className="flex-1 bg-transparent text-xs outline-none text-foreground placeholder:text-muted-foreground"
+                                    />
+                                    <button onClick={() => { setTeamPickerFor(null); setTeamSearch("") }}>
+                                      <X size={12} className="text-muted-foreground hover:text-foreground transition-colors" />
+                                    </button>
+                                  </div>
+                                  <div className="max-h-40 overflow-y-auto space-y-0.5 pr-0.5">
+                                    {filteredTeams.map((t) => (
+                                      <button
+                                        key={t.code}
+                                        onClick={() => pickTeam(t)}
+                                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary/60 transition-colors text-left"
+                                      >
+                                        <span className="text-base">{t.flag}</span>
+                                        <span className="text-xs font-bold w-8">{t.code}</span>
+                                        <span className="text-xs text-muted-foreground">{t.name}</span>
+                                      </button>
+                                    ))}
+                                    {filteredTeams.length === 0 && (
+                                      <p className="text-xs text-muted-foreground text-center py-3">Nenhum time encontrado</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          {/* Save teams button (only when there are edits) */}
+                          {hasTeamEdits && (
+                            <div className="px-3 pb-3">
+                              <button
+                                onClick={() => saveTeams(match)}
+                                disabled={isSaving}
+                                className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-400 text-sm font-bold hover:bg-amber-400/25 disabled:opacity-60 transition-all"
+                              >
+                                {isSaving ? <RefreshCw size={12} className="animate-spin" /> : <Users size={12} />}
+                                Salvar Times
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Score editor */}
+                        <div className="flex items-center justify-center gap-6">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-2xl">{effectiveHome.flag}</span>
+                            <span className="text-xs font-bold">{effectiveHome.name}</span>
+                          </div>
+
                           <div className="flex items-center gap-3">
                             <div className="flex flex-col items-center gap-1">
                               <button onClick={() => setScore(match.id, "home", 1)} className="w-8 h-7 rounded-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors">
@@ -318,10 +552,9 @@ export default function AdminPage() {
                             </div>
                           </div>
 
-                          {/* Away */}
                           <div className="flex flex-col items-center gap-1">
-                            <span className="text-2xl">{match.awayTeam.flag}</span>
-                            <span className="text-xs font-bold">{match.awayTeam.name}</span>
+                            <span className="text-2xl">{effectiveAway.flag}</span>
+                            <span className="text-xs font-bold">{effectiveAway.name}</span>
                           </div>
                         </div>
 

@@ -10,15 +10,17 @@ interface Props {
   onOpenChange: (open: boolean) => void
   children: React.ReactNode
   className?: string
+  title?: string
 }
 
-export function ModalDrawer({ open, onOpenChange, children, className }: Props) {
+export function ModalDrawer({ open, onOpenChange, children, className, title = "Modal" }: Props) {
   const isMobile = useIsMobile()
 
   if (isMobile) {
     return (
       <Drawer.Root open={open} onOpenChange={onOpenChange}>
         <Drawer.Portal>
+          <Drawer.Trigger asChild></Drawer.Trigger>
           <Drawer.Overlay className="fixed inset-0 z-50 bg-black/60" />
           <Drawer.Content
             className={cn(
@@ -29,6 +31,7 @@ export function ModalDrawer({ open, onOpenChange, children, className }: Props) 
               className
             )}
           >
+            <Drawer.Title className="sr-only">{title}</Drawer.Title>
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 shrink-0">
               <div className="w-9 h-1 rounded-full bg-muted-foreground/25" />
@@ -49,7 +52,7 @@ export function ModalDrawer({ open, onOpenChange, children, className }: Props) 
           className
         )}
       >
-        <DialogTitle className="sr-only">Modal</DialogTitle>
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         {children}
       </DialogContent>
     </Dialog>

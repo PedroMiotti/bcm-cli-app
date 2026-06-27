@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { MapPin, Calendar, Users, Lock, Check, ChevronUp, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { Match, Prediction } from "@/lib/types"
+import { PHASE_LABELS } from "@/lib/types"
 import GaleraModal from "./GaleraModal"
 
 interface Props {
@@ -101,7 +102,7 @@ export default function MatchCard({ match, prediction, onSave, index = 0 }: Prop
             <span className="text-[10px] font-bold text-muted-foreground">JOGO #{match.matchNumber}</span>
             <span className="text-[10px] text-border">•</span>
             <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-              GRUPO {match.group}
+              {match.phase === "grupo" ? `GRUPO ${match.group}` : PHASE_LABELS[match.phase].toUpperCase()}
             </span>
           </div>
           <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
