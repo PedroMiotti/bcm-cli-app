@@ -2,13 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Trophy, Calendar, Award, BookOpen } from "lucide-react"
+import { Trophy, Calendar, Award, BookOpen, Swords } from "lucide-react"
 
 const tabs = [
-  { href: "/jogos",   label: "JOGOS",   Icon: Calendar },
-  { href: "/ranking", label: "RANKING", Icon: Trophy   },
-  { href: "/premios", label: "PRÊMIOS", Icon: Award    },
-  { href: "/regras",  label: "REGRAS",  Icon: BookOpen },
+  { href: "/jogos",        label: "JOGOS",   Icon: Calendar },
+  { href: "/ranking",      label: "RANKING", Icon: Trophy   },
+  { href: "/chaveamento",  label: "CHAVE",   Icon: Swords   },
+  { href: "/premios",      label: "PRÊMIOS", Icon: Award    },
+  { href: "/regras",       label: "REGRAS",  Icon: BookOpen },
 ]
 
 export default function BottomNav() {

@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import { createServerClient } from "./supabase/server"
-import type { User, Match, Prediction, Team, MatchResult, PointBreakdown } from "./types"
+import type { User, Match, Prediction, Team, MatchResult, PointBreakdown, MatchPhase } from "./types"
 
 const DATA_DIR = path.join(process.cwd(), "data")
 
@@ -14,6 +14,7 @@ function readJSON<T>(filename: string): T {
 interface MatchRow {
   id: string
   group: string
+  phase: MatchPhase
   match_number: number
   home_team: Team
   away_team: Team
@@ -39,6 +40,7 @@ function rowToMatch(row: MatchRow): Match {
   return {
     id: row.id,
     group: row.group,
+    phase: row.phase ?? "grupo",
     matchNumber: row.match_number,
     homeTeam: row.home_team,
     awayTeam: row.away_team,
@@ -53,6 +55,7 @@ function matchToRow(match: Match): MatchRow {
   return {
     id: match.id,
     group: match.group,
+    phase: match.phase,
     match_number: match.matchNumber,
     home_team: match.homeTeam,
     away_team: match.awayTeam,
@@ -126,6 +129,7 @@ export async function updateMatch(id: string, updates: Partial<Match>): Promise<
   const merged = { ...existing, ...updates }
   const row: Partial<MatchRow> = {}
   if (updates.group !== undefined) row.group = merged.group
+  if (updates.phase !== undefined) row.phase = merged.phase
   if (updates.matchNumber !== undefined) row.match_number = merged.matchNumber
   if (updates.homeTeam !== undefined) row.home_team = merged.homeTeam
   if (updates.awayTeam !== undefined) row.away_team = merged.awayTeam

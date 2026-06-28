@@ -17,7 +17,7 @@
     "id": "u3",
     "username": "thi.trovao10",
     "displayName": "Thiago",
-    "role": "participant",
+    "role": "admin",
     "description": ""
   },
   {
@@ -45,21 +45,14 @@
     "id": "u7",
     "username": "leonardo.fenomeno",
     "displayName": "Leo",
-    "role": "participant",
+    "role": "admin",
     "description": ""
   },
   {
     "id": "u8",
     "username": "cv7",
     "displayName": "Cobra",
-    "role": "participant",
-    "description": ""
-  },
-  {
-    "id": "u9",
-    "username": "galadriendrick",
-    "displayName": "La Peligrosa",
-    "role": "participant",
+    "role": "admin",
     "description": ""
   },
   {
@@ -101,13 +94,6 @@
     "id": "u15",
     "username": "bral.mostra.a.stella.porfavor",
     "displayName": "Bral",
-    "role": "participant",
-    "description": ""
-  },
-  {
-    "id": "u16",
-    "username": "thiagao",
-    "displayName": "Thiagão",
     "role": "participant",
     "description": ""
   }

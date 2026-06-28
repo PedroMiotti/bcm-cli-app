@@ -3,9 +3,32 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
-import type { RankingEntry } from "@/lib/types"
+import type { Match, MatchPhase, RankingEntry } from "@/lib/types"
+import { PHASE_LABELS, PHASE_ORDER } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { RefreshCw, Cloud, MousePointerClick } from "lucide-react"
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts"
+
+interface MatchStat {
+  matchId: string
+  matchNumber: number
+  label: string
+  homeTeam: { name: string; code: string; flag: string }
+  awayTeam: { name: string; code: string; flag: string }
+  scheduledAt: string
+  totalPoints: number
+}
+
+const C = { primary: "#009C3B", muted: "#7a8a97", border: "#1e2d38", card: "#0c1318" }
 
 function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
@@ -34,16 +57,21 @@ export default function RankingPage() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const [showHint, setShowHint] = useState(false)
+  const [selectedPhase, setSelectedPhase] = useState<MatchPhase | "all">("all")
+  const [availablePhases, setAvailablePhases] = useState<MatchPhase[]>([])
+  const [podiumView, setPodiumView] = useState<"podium" | "top-matches">("podium")
+  const [matchStats, setMatchStats] = useState<MatchStat[]>([])
 
   function dismissHint() {
     setShowHint(false)
     localStorage.setItem("bolao:ranking_tap_hint", "1")
   }
 
-  async function loadRanking(showRefreshing = false) {
+  async function loadRanking(showRefreshing = false, phase: MatchPhase | "all" = selectedPhase) {
     if (showRefreshing) setRefreshing(true)
     try {
-      const data = await fetch("/api/ranking").then((r) => r.json())
+      const url = phase === "all" ? "/api/ranking" : `/api/ranking?phase=${phase}`
+      const data = await fetch(url).then((r) => r.json())
       setRanking(data)
       setLastUpdate(new Date())
     } finally {
@@ -52,7 +80,25 @@ export default function RankingPage() {
     }
   }
 
-  useEffect(() => { loadRanking() }, [])
+  useEffect(() => {
+    fetch("/api/matches")
+      .then((r) => r.json())
+      .then((matches: Match[]) => {
+        const phases = PHASE_ORDER.filter((p) => matches.some((m) => m.phase === p))
+        setAvailablePhases(phases)
+      })
+      .catch(() => {})
+    fetch("/api/matches/stats")
+      .then((r) => r.json())
+      .then(setMatchStats)
+      .catch(() => {})
+    loadRanking()
+  }, [])
+
+  function handlePhaseChange(phase: MatchPhase | "all") {
+    setSelectedPhase(phase)
+    loadRanking(true, phase)
+  }
 
   useEffect(() => {
     if (loading) return
@@ -106,7 +152,38 @@ export default function RankingPage() {
         </button>
       </motion.div>
 
-      {/* Podium */}
+      {/* Phase filter */}
+      {availablePhases.length > 1 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.04 }}
+          className="overflow-x-auto scrollbar-primary -mb-1"
+        >
+          <div className="flex gap-1.5 pb-1 min-w-max">
+            {(["all", ...availablePhases] as (MatchPhase | "all")[]).map((phase) => {
+              const active = selectedPhase === phase
+              const label = phase === "all" ? "GERAL" : PHASE_LABELS[phase].toUpperCase()
+              return (
+                <motion.button
+                  key={phase}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => handlePhaseChange(phase)}
+                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition-all duration-200 border whitespace-nowrap ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/25"
+                      : "bg-secondary/80 text-muted-foreground border-border/60 hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {label}
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Podium / Top Matches */}
       {top3.length > 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
@@ -114,39 +191,117 @@ export default function RankingPage() {
           transition={{ delay: 0.05 }}
           className="rounded-2xl bg-card border border-border/60 p-5"
         >
-          <div className="flex items-end justify-center gap-4">
-            {/* Reorder: 2nd, 1st, 3rd */}
-            {[top3[1], top3[0], top3[2]].filter(Boolean).map((entry, i) => {
-              const realIdx = i === 0 ? 1 : i === 1 ? 0 : 2
-              const isFirst = realIdx === 0
-              return (
-                <motion.div
-                  key={entry.userId}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + realIdx * 0.05 }}
-                  className="flex flex-col items-center gap-2 flex-1"
+          {/* Tab toggle */}
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+              {podiumView === "podium" ? "Pódio" : "Jogos mais pontuados"}
+            </span>
+            <div className="flex gap-0.5 bg-secondary/60 rounded-lg p-0.5">
+              {(["podium", "top-matches"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setPodiumView(v)}
+                  className={`text-[10px] font-bold px-2 py-1 rounded-md transition-all ${
+                    podiumView === v
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  <span className="text-2xl">{MEDAL_ICONS[realIdx]}</span>
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-b border flex items-center justify-center text-lg font-black ${MEDAL_COLORS[realIdx]} ${isFirst ? "w-16 h-16" : ""}`}>
-                    {getInitials(entry.displayName)}
-                  </div>
-                  <div className={`w-full rounded-xl border bg-gradient-to-b px-2 py-2 text-center ${MEDAL_COLORS[realIdx]} ${isFirst ? "h-28" : "h-20"} flex flex-col justify-center`}>
-                    <p className="text-[11px] font-bold truncate">{entry.displayName.split(" ")[0]}</p>
-                    <p className={`font-black tabular-nums ${isFirst ? "text-2xl" : "text-xl"} mt-0.5`}>
-                      {entry.totalPoints}
-                    </p>
-                    <p className="text-[9px] opacity-60">pts</p>
-                    {isFirst && (
-                      <span className="text-[9px] font-bold bg-yellow-400/20 text-yellow-400 rounded-full px-2 py-0.5 mt-1">
-                        LÍDER
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              )
-            })}
+                  {v === "podium" ? "🏆 Pódio" : "📊 Top Jogos"}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* Podium view */}
+          {podiumView === "podium" && (
+            <div className="flex items-end justify-center gap-4">
+              {[top3[1], top3[0], top3[2]].filter(Boolean).map((entry, i) => {
+                const realIdx = i === 0 ? 1 : i === 1 ? 0 : 2
+                const isFirst = realIdx === 0
+                return (
+                  <motion.div
+                    key={entry.userId}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + realIdx * 0.05 }}
+                    className="flex flex-col items-center gap-2 flex-1"
+                  >
+                    <span className="text-2xl">{MEDAL_ICONS[realIdx]}</span>
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-b border flex items-center justify-center text-lg font-black ${MEDAL_COLORS[realIdx]} ${isFirst ? "w-16 h-16" : ""}`}>
+                      {getInitials(entry.displayName)}
+                    </div>
+                    <div className={`w-full rounded-xl border bg-gradient-to-b px-2 py-2 text-center ${MEDAL_COLORS[realIdx]} ${isFirst ? "h-28" : "h-20"} flex flex-col justify-center`}>
+                      <p className="text-[11px] font-bold truncate">{entry.displayName.split(" ")[0]}</p>
+                      <p className={`font-black tabular-nums ${isFirst ? "text-2xl" : "text-xl"} mt-0.5`}>
+                        {entry.totalPoints}
+                      </p>
+                      <p className="text-[9px] opacity-60">pts</p>
+                      {isFirst && (
+                        <span className="text-[9px] font-bold bg-yellow-400/20 text-yellow-400 rounded-full px-2 py-0.5 mt-1">
+                          LÍDER
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Top Matches view */}
+          {podiumView === "top-matches" && (
+            matchStats.length === 0 ? (
+              <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+                Nenhum jogo finalizado ainda
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart
+                  data={matchStats.slice(-14).map((s) => ({
+                    label: `${s.homeTeam.code}×${s.awayTeam.code}`,
+                    pts: s.totalPoints,
+                  }))}
+                  margin={{ top: 4, right: 8, left: -24, bottom: 0 }}
+                  barCategoryGap="30%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fill: C.muted, fontSize: 8 }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={0}
+                    angle={-35}
+                    textAnchor="end"
+                    height={36}
+                  />
+                  <YAxis tick={{ fill: C.muted, fontSize: 9 }} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null
+                      return (
+                        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8 }} className="px-3 py-2 text-xs">
+                          <p style={{ color: C.muted }} className="font-semibold mb-0.5">{label}</p>
+                          <p style={{ color: C.primary }} className="font-black">{payload[0].value} pts totais</p>
+                        </div>
+                      )
+                    }}
+                    cursor={{ fill: `${C.border}60` }}
+                  />
+                  <Bar dataKey="pts" radius={[3, 3, 0, 0]}>
+                    {matchStats.slice(-14).map((s, i, arr) => (
+                      <Cell
+                        key={s.matchId}
+                        fill={C.primary}
+                        opacity={0.5 + (i / arr.length) * 0.5}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )
+          )}
         </motion.div>
       )}
 

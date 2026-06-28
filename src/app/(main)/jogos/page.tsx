@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useAuthStore } from "@/store/auth"
-import type { Match, Prediction } from "@/lib/types"
+import type { Match, MatchPhase, Prediction } from "@/lib/types"
+import { PHASE_LABELS, PHASE_ORDER } from "@/lib/types"
 import GroupFilter from "@/components/GroupFilter"
 import MatchCard from "@/components/MatchCard"
 import { motion, AnimatePresence } from "framer-motion"
@@ -21,6 +22,7 @@ export default function JogosPage() {
   const user = useAuthStore((s) => s.user)
   const [matches, setMatches] = useState<Match[]>([])
   const [predictions, setPredictions] = useState<Prediction[]>([])
+  const [selectedPhase, setSelectedPhase] = useState<MatchPhase>("grupo")
   const [selectedGroup, setSelectedGroup] = useState("A")
   const [loading, setLoading] = useState(true)
   const [showDaySection, setShowDaySection] = useState(true)
@@ -45,9 +47,22 @@ export default function JogosPage() {
     [predictions]
   )
 
+  // Available phases (only those with actual matches in DB)
+  const availablePhases = useMemo(
+    () => PHASE_ORDER.filter((p) => matches.some((m) => m.phase === p)),
+    [matches]
+  )
+
+  // Auto-select first available phase with matches
+  useEffect(() => {
+    if (availablePhases.length > 0 && !availablePhases.includes(selectedPhase)) {
+      setSelectedPhase(availablePhases[0])
+    }
+  }, [availablePhases, selectedPhase])
+
   const groupProgress = useMemo(() => {
     const result: Record<string, { done: number; total: number }> = {}
-    for (const m of matches) {
+    for (const m of matches.filter((m) => m.phase === "grupo")) {
       if (!result[m.group]) result[m.group] = { done: 0, total: 0 }
       result[m.group].total++
       if (predMap[m.id]) result[m.group].done++
@@ -55,10 +70,15 @@ export default function JogosPage() {
     return result
   }, [matches, predMap])
 
-  const totalPalpitados = predictions.length
-  const totalMatches = matches.length
-  const pct = totalMatches > 0 ? Math.round((totalPalpitados / totalMatches) * 100) : 0
-  const allDone = totalPalpitados === totalMatches && totalMatches > 0
+  // Progress for the currently selected phase
+  const phaseMatches = useMemo(
+    () => matches.filter((m) => m.phase === selectedPhase),
+    [matches, selectedPhase]
+  )
+  const phasePalpitados = phaseMatches.filter((m) => predMap[m.id]).length
+  const phaseTotal = phaseMatches.length
+  const pct = phaseTotal > 0 ? Math.round((phasePalpitados / phaseTotal) * 100) : 0
+  const allDone = phasePalpitados === phaseTotal && phaseTotal > 0
 
   const { todayMatches, tomorrowMatches } = useMemo(() => {
     const fmt = (d: Date) =>
@@ -78,10 +98,15 @@ export default function JogosPage() {
     }
   }, [matches])
 
-  const groupMatches = useMemo(
-    () => matches.filter((m) => m.group === selectedGroup).sort((a, b) => a.matchNumber - b.matchNumber),
-    [matches, selectedGroup]
-  )
+  // Matches to show in the main grid
+  const visibleMatches = useMemo(() => {
+    if (selectedPhase === "grupo") {
+      return matches
+        .filter((m) => m.phase === "grupo" && m.group === selectedGroup)
+        .sort((a, b) => a.matchNumber - b.matchNumber)
+    }
+    return phaseMatches.sort((a, b) => a.matchNumber - b.matchNumber)
+  }, [matches, selectedPhase, selectedGroup, phaseMatches])
 
   async function handleSave(matchId: string, homeGoals: number, awayGoals: number) {
     if (!user) return
@@ -168,6 +193,9 @@ export default function JogosPage() {
                       const isFinished = match.status === "finished"
                       const hasScore = match.result.homeGoals !== null
                       const isLocked = match.status !== "scheduled" || Date.now() >= new Date(match.scheduledAt).getTime() - 5 * 60 * 1000
+                      const phaseLabel = match.phase === "grupo"
+                        ? `Grupo ${match.group}`
+                        : PHASE_LABELS[match.phase]
 
                       return (
                         <button
@@ -192,7 +220,7 @@ export default function JogosPage() {
                             ) : (
                               <span className="text-[9px] text-muted-foreground font-semibold">{timeStr}</span>
                             )}
-                            <span className="text-[9px] text-muted-foreground font-medium">Grupo {match.group}</span>
+                            <span className="text-[9px] text-muted-foreground font-medium">{phaseLabel}</span>
                           </div>
 
                           <div className="flex items-center justify-between gap-1 w-full">
@@ -269,7 +297,7 @@ export default function JogosPage() {
             <div className="flex items-center gap-2">
               <CheckCircle2 size={15} className="text-primary shrink-0" />
               <p className="text-sm font-bold text-primary">
-                Todos os {totalMatches} palpites feitos! 🎉
+                Todos os {phaseTotal} palpites feitos! 🎉
               </p>
             </div>
           </motion.div>
@@ -286,7 +314,7 @@ export default function JogosPage() {
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-xs font-black text-muted-foreground uppercase tracking-wide">
-              ⚽ Meus Palpites da Fase de Grupos
+              ⚽ {PHASE_LABELS[selectedPhase]}
             </p>
             <p className="text-[10px] text-muted-foreground mt-0.5">
               Dê seus palpites para os confrontos oficiais.
@@ -295,8 +323,8 @@ export default function JogosPage() {
           <div className="text-right">
             <p className="text-xs text-muted-foreground font-semibold">PALPITADOS</p>
             <p className="text-sm font-black tabular-nums">
-              <span className="text-primary">{totalPalpitados}</span>
-              <span className="text-muted-foreground"> / {totalMatches}</span>
+              <span className="text-primary">{phasePalpitados}</span>
+              <span className="text-muted-foreground"> / {phaseTotal}</span>
             </p>
           </div>
         </div>
@@ -322,32 +350,84 @@ export default function JogosPage() {
         </div>
       </motion.div>
 
-      {/* Group filter */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="mt-4 mb-1"
-      >
-        <GroupFilter selected={selectedGroup} onSelect={setSelectedGroup} progress={groupProgress} />
-      </motion.div>
+      {/* Phase filter — only shown when there are multiple phases */}
+      {availablePhases.length > 1 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.08 }}
+          className="mt-4 mb-1"
+        >
+          <div className="overflow-x-auto scrollbar-primary">
+            <div className="flex gap-1.5 px-4 pb-1 min-w-max">
+              {availablePhases.map((phase) => {
+                const active = selectedPhase === phase
+                const phaseMs = matches.filter((m) => m.phase === phase)
+                const done = phaseMs.filter((m) => predMap[m.id]).length
+                const total = phaseMs.length
+                const complete = done === total && total > 0
+                return (
+                  <motion.button
+                    key={phase}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => setSelectedPhase(phase)}
+                    className={`relative flex flex-col items-center rounded-xl px-3 py-1.5 text-xs font-bold transition-all duration-200 border ${
+                      active
+                        ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/25"
+                        : complete
+                        ? "bg-primary/12 text-primary border-primary/30"
+                        : "bg-secondary/80 text-muted-foreground border-border/60 hover:border-primary/40 hover:text-foreground"
+                    }`}
+                  >
+                    <span className="text-xs font-black leading-tight">{PHASE_LABELS[phase].toUpperCase()}</span>
+                    <span className={`text-[9px] font-semibold tabular-nums ${active ? "text-primary-foreground/75" : "opacity-60"}`}>
+                      {done}/{total}
+                    </span>
+                  </motion.button>
+                )
+              })}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
-      {/* Group label */}
+      {/* Group filter (only for grupo phase) */}
+      {selectedPhase === "grupo" && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className={availablePhases.length > 1 ? "mb-1" : "mt-4 mb-1"}
+        >
+          <GroupFilter selected={selectedGroup} onSelect={setSelectedGroup} progress={groupProgress} />
+        </motion.div>
+      )}
+
+      {/* Section label */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={selectedGroup}
+          key={selectedPhase === "grupo" ? `grupo-${selectedGroup}` : selectedPhase}
           initial={{ opacity: 0, x: -6 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 6 }}
           transition={{ duration: 0.2 }}
           className="px-4 mt-4 mb-3"
         >
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-xl font-black">GRUPO {selectedGroup}</h2>
-            <span className="text-xs text-muted-foreground">
-              {groupProgress[selectedGroup]?.done ?? 0}/{groupProgress[selectedGroup]?.total ?? 6} palpites
-            </span>
-          </div>
+          {selectedPhase === "grupo" ? (
+            <div className="flex items-baseline gap-2">
+              <h2 className="text-xl font-black">GRUPO {selectedGroup}</h2>
+              <span className="text-xs text-muted-foreground">
+                {groupProgress[selectedGroup]?.done ?? 0}/{groupProgress[selectedGroup]?.total ?? 6} palpites
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-baseline gap-2">
+              <h2 className="text-xl font-black">{PHASE_LABELS[selectedPhase].toUpperCase()}</h2>
+              <span className="text-xs text-muted-foreground">
+                {phasePalpitados}/{phaseTotal} palpites
+              </span>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
 
@@ -363,14 +443,14 @@ export default function JogosPage() {
       {/* Match cards — 2-col grid */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={selectedGroup}
+          key={selectedPhase === "grupo" ? `grupo-${selectedGroup}` : selectedPhase}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
           className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4"
         >
-          {groupMatches.map((match, i) => (
+          {visibleMatches.map((match, i) => (
             <MatchCard
               key={match.id}
               match={match}
