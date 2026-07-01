@@ -146,10 +146,23 @@ export async function updateMatch(id: string, updates: Partial<Match>): Promise<
 
 export async function getPredictions(): Promise<Prediction[]> {
   const supabase = createServerClient()
-  const { data, error } = await supabase.from("predictions").select("*").limit(10000)
+
+  const { data, error } = await supabase
+  .from('predictions')
+  .select('*')
+  .range(0, 999);
+
+const { data: data2, error: error2 } = await supabase
+  .from('predictions')
+  .select('*')
+  .range(1000, 1999);
+
+  const allData = [...(data || []), ...(data2 || [])] as PredictionRow[]
 
   if (error) throw new Error(`getPredictions: ${error.message}`)
-  return (data as PredictionRow[]).map(rowToPrediction)
+  if (error2) throw new Error(`getPredictions: ${error2.message}`)
+
+  return (allData as PredictionRow[]).map(rowToPrediction)
 }
 
 export async function getPredictionsByUser(userId: string): Promise<Prediction[]> {
