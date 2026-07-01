@@ -146,7 +146,7 @@ export async function updateMatch(id: string, updates: Partial<Match>): Promise<
 
 export async function getPredictions(): Promise<Prediction[]> {
   const supabase = createServerClient()
-  const { data, error } = await supabase.from("predictions").select("*")
+  const { data, error } = await supabase.from("predictions").select("*").limit(10000)
 
   if (error) throw new Error(`getPredictions: ${error.message}`)
   return (data as PredictionRow[]).map(rowToPrediction)
